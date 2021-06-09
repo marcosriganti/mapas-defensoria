@@ -1,9 +1,24 @@
 import React, { useContext, createContext, useState } from "react";
+import { firebase_app } from "../firebase";
 export const authContext = createContext();
 
 export const fakeAuth = {
   isAuthenticated: false,
   signin(payload, success, onError) {
+    firebase_app
+      .auth()
+      .signInWithEmailAndPassword(payload.email, payload.password)
+      .then((userCredential) => {
+        // Signed in
+        var user = userCredential.user;
+        // ...
+        success(user);
+      })
+      .catch((error) => {
+        console.log("encontramos error", error);
+        onError(error);
+        // ..
+      });
     fakeAuth.isAuthenticated = true;
   },
   signout(cb) {
@@ -21,14 +36,14 @@ export function useAuth() {
 }
 
 function useProvideAuth() {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("user")));
 
   const signin = (payload, cb, error) => {
     return fakeAuth.signin(
       payload,
       (data) => {
         setUser(data);
-        localStorage.setItem("user", JSON.stringify(data));
+        sessionStorage.setItem("user", JSON.stringify(data));
         cb();
       },
       error
@@ -38,7 +53,7 @@ function useProvideAuth() {
   const signout = (cb) => {
     return fakeAuth.signout(() => {
       setUser(null);
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
       cb();
     });
   };

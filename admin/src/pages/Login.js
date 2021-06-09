@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { useAuth } from "../components/Auth";
 import Logo from "../assets/logo.svg";
 
 const LoginPage = () => {
+  let history = useHistory();
+  let auth = useAuth();
+
   // Login handle
   const [values, setValues] = useState({});
   const handleChange = (key, value) => {
@@ -11,6 +16,30 @@ const LoginPage = () => {
     });
   };
 
+  const handleSignIn = () => {
+    const { email, password } = values;
+    const payload = {
+      email,
+      password,
+    };
+    auth.signin(
+      payload,
+      () => {
+        setValues({
+          ...values,
+          error: false,
+        });
+        history.replace("/");
+      },
+      (error) => {
+        setValues({
+          ...values,
+          error: true,
+          errorLog: error.message,
+        });
+      }
+    );
+  };
   return (
     <div className="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
       <div className="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
@@ -49,9 +78,15 @@ const LoginPage = () => {
                 />
               </label>
 
+              {values.error && (
+                <div className="text-red-500 font-bold text-xs text-center pt-5">
+                  {values.errorLog}
+                </div>
+              )}
+
               <a
                 className="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-                href="../index.html"
+                onClick={handleSignIn}
               >
                 Ingresar
               </a>
