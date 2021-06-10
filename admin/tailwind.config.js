@@ -2,7 +2,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 const Color = require("color");
 
 module.exports = {
-  purge: ["public/**/*.html"],
+  purge: ["public/**/*.html", "src/**/*.js"],
   theme: {
     themeVariants: ["dark"],
     customForms: (theme) => ({
