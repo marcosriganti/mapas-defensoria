@@ -3,7 +3,7 @@ import Aside from "./aside";
 
 const Header = () => {
   return (
-    <header className="z-10 py-4 bg-white shadow-md dark:bg-gray-800">
+    <header className="z-10 py-4 bg-white shadow-md dark:bg-gra y-800 hidden">
       <div className="container flex items-center justify-between h-full px-6 mx-auto text-purple-600 dark:text-purple-300">
         <button
           className="p-1 mr-5 -ml-1 rounded-md md:hidden focus:outline-none focus:shadow-outline-purple"

@@ -8,6 +8,7 @@ import {
 import { ProvideAuth, useAuth } from "./components/Auth";
 import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
+import CategoriesPage from "./pages/Categories";
 
 import "./App.css";
 
@@ -42,6 +43,9 @@ function App() {
           </PrivateRoute>
           <Route path="/login" exact>
             <LoginPage />
+          </Route>
+          <Route path="/categories" exact>
+            <CategoriesPage />
           </Route>
           {/* <Route exact path="/me/:profile">
             <PublicProfile />
