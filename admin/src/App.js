@@ -8,8 +8,13 @@ import {
 import { ProvideAuth, useAuth } from "./components/Auth";
 import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
-import CategoriesPage from "./pages/Categories";
+import PointsPage from "./pages/points";
+import PointsAddPage from "./pages/points/new";
+import PointsEditPage from "./pages/points/edit";
 
+import CategoriesPage from "./pages/categories";
+import CategoriesAddPage from "./pages/categories/new";
+import CategoriesEditPage from "./pages/categories/edit";
 import "./App.css";
 
 function PrivateRoute({ children, ...rest }) {
@@ -44,9 +49,25 @@ function App() {
           <Route path="/login" exact>
             <LoginPage />
           </Route>
+          <Route path="/points" exact>
+            <PointsPage />
+          </Route>
+          <Route path="/points/new" exact>
+            <PointsAddPage />
+          </Route>
+          <Route path="/points/edit/:id" exact>
+            <PointsEditPage />
+          </Route>
           <Route path="/categories" exact>
             <CategoriesPage />
           </Route>
+          <Route path="/categories/new" exact>
+            <CategoriesAddPage />
+          </Route>
+          <Route path="/categories/edit/:id" exact>
+            <CategoriesEditPage />
+          </Route>
+
           {/* <Route exact path="/me/:profile">
             <PublicProfile />
           </Route> */}
