@@ -81,3 +81,7 @@ code {
   -webkit-print-color-adjust: exact;
   color-adjust: exact;
 }
+
+label.block input[role="combobox"] {
+  width: 100%;
+}

@@ -1,79 +1,129 @@
 import React, { useState } from "react";
-/* <div className="mt-4 text-sm">
-              <span className="text-gray-700 dark:text-gray-400">
-                Account Type
-              </span>
-              <div className="mt-2">
-                <label className="inline-flex items-center text-gray-600 dark:text-gray-400">
-                  <input
-                    type="radio"
-                    className="text-purple-600 form-radio focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                    name="accountType"
-                    value="personal"
-                  />
-                  <span className="ml-2">Personal</span>
-                </label>
-                <label className="inline-flex items-center ml-6 text-gray-600 dark:text-gray-400">
-                  <input
-                    type="radio"
-                    className="text-purple-600 form-radio focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                    name="accountType"
-                    value="busines"
-                  />
-                  <span className="ml-2">Business</span>
-                </label>
-              </div>
+import Autocomplete from "react-autocomplete";
+import cities from "../data/cities.json";
+
+const TypeNumber = ({ field, handleChange, values }) => {
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+
+      <input
+        name={field.name}
+        type="number"
+        onChange={(ev) => handleChange(field.name, ev.target.value)}
+        className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+        placeholder=""
+        value={values[field.name] ? values[field.name] : ""}
+      />
+    </label>
+  );
+};
+const TypeText = ({ field, handleChange, values }) => {
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+
+      <input
+        name={field.name}
+        onChange={(ev) => handleChange(field.name, ev.target.value)}
+        className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+        placeholder=""
+        type="text"
+        value={values[field.name] ? values[field.name] : ""}
+      />
+    </label>
+  );
+};
+const TypeTextarea = ({ field, handleChange, values }) => {
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+
+      <textarea
+        className="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+        rows="5"
+        name={field.name}
+        onChange={(ev) => handleChange(field.name, ev.target.value)}
+      >
+        {values[field.name] ? values[field.name] : ""}
+      </textarea>
+    </label>
+  );
+};
+const TypeSelect = ({ field, handleChange, values }) => {
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+
+      <select
+        name={field.name}
+        onChange={(ev) => handleChange(field.name, ev.target.value)}
+        className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+        placeholder=""
+        type="text"
+        value={values[field.name] ? values[field.name] : ""}
+      >
+        <option>Test</option>
+      </select>
+    </label>
+  );
+};
+const TypeCities = ({ field, handleChange, values }) => {
+  let value = "test";
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+      <div className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input">
+        <Autocomplete
+          className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+          getItemValue={(item) => item.full_name}
+          wrapperStyle={{ width: "100%" }}
+          items={cities}
+          shouldItemRender={(item, value) =>
+            item.full_name.toLowerCase().indexOf(value.toLowerCase()) > -1
+          }
+          renderItem={(item, isHighlighted) => (
+            <div
+              style={{ background: isHighlighted ? "lightgray" : "white" }}
+              className="w-full p-2"
+            >
+              {item.full_name}
             </div>
+          )}
+          value={values[field.name] ? values[field.name] : ""}
+          // value={value}
+          onChange={(ev) => handleChange(field.name, ev.target.value)}
+          onSelect={(val) => handleChange(field.name, val)}
+        />
+      </div>
+    </label>
+  );
+};
 
-            <label className="block mt-4 text-sm">
-              <span className="text-gray-700 dark:text-gray-400">
-                Requested Limit
-              </span>
-              <select className="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
-                <option>$1,000</option>
-                <option>$5,000</option>
-                <option>$10,000</option>
-                <option>$25,000</option>
-              </select>
-            </label>
+// <Autocomplete
+//   getItemValue={(item) => item.label}
+//   items={[
+//     { label: 'apple' },
+//     { label: 'banana' },
+//     { label: 'pear' }
+//   ]}
+//   renderItem={(item, isHighlighted) =>
+//     <div style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+//       {item.label}
+//     </div>
+//   }
+//   value={value}
+//   onChange={(e) => value = e.target.value}
+//   onSelect={(val) => value = val}
+// />
 
-            <label className="block mt-4 text-sm">
-              <span className="text-gray-700 dark:text-gray-400">
-                Multiselect
-              </span>
-              <select
-                className="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-multiselect focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                multiple
-              >
-                <option>Option 1</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-                <option>Option 4</option>
-                <option>Option 5</option>
-              </select>
-            </label>
-
-            <label className="block mt-4 text-sm">
-              <span className="text-gray-700 dark:text-gray-400">Message</span>
-              <textarea
-                className="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                rows="3"
-                placeholder="Enter some long form content."
-              ></textarea>
-            </label>
-
-            <div className="flex mt-6 text-sm">
-              <label className="flex items-center dark:text-gray-400">
-                <input
-                  type="checkbox"
-                  className="text-purple-600 form-checkbox focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                />
-                <span className="ml-2">
-                  I agree to the
-                  <span className="underline">privacy policy</span>
-                </span>
-              </label>
-            </div> */
+const types = {
+  text: TypeText,
+  number: TypeNumber,
+  textarea: TypeTextarea,
+  select: TypeSelect,
+  customCities: TypeCities,
+};
 
 const Form = ({ fields, onSubmit, initialValues }) => {
   const [values, setValues] = useState(initialValues ?? {});
@@ -86,38 +136,21 @@ const Form = ({ fields, onSubmit, initialValues }) => {
   return (
     <div>
       {fields.map((field) => {
+        const Element = types[field.type];
+        console.log(field.type);
         return (
-          <div className="block mt-4 text-sm" key={`field-${field.name}`}>
-            {field.type === "text" && (
-              <label className="block text-sm">
-                <span className="text-gray-700 dark:text-gray-400">
-                  {field.label}
-                </span>
-                <input
-                  name={field.name}
-                  onChange={(ev) => handleChange(field.name, ev.target.value)}
-                  className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                  placeholder=""
-                  value={values[field.name] ? values[field.name] : ""}
-                />
-              </label>
-            )}
-            {field.type === "textarea" && (
-              <label className="block text-sm">
-                <span className="text-gray-700 dark:text-gray-400">
-                  {field.label}
-                </span>
-                <textarea
-                  className="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                  rows="5"
-                  name={field.name}
-                  onChange={(ev) => handleChange(field.name, ev.target.value)}
-                >
-                  {values[field.name] ? values[field.name] : ""}
-                </textarea>
-              </label>
-            )}
-          </div>
+          Element &&
+          !field.hidden && (
+            <div className="block mt-4 text-sm" key={`field-${field.name}`}>
+              {
+                <Element
+                  field={field}
+                  handleChange={handleChange}
+                  values={values}
+                ></Element>
+              }
+            </div>
+          )
         );
       })}
       <hr className="my-4" />

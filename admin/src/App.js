@@ -8,6 +8,7 @@ import {
 import { ProvideAuth, useAuth } from "./components/Auth";
 import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
+import UsersPage from "./pages/users";
 import PointsPage from "./pages/points";
 import PointsAddPage from "./pages/points/new";
 import PointsEditPage from "./pages/points/edit";
@@ -48,6 +49,9 @@ function App() {
           </PrivateRoute>
           <Route path="/login" exact>
             <LoginPage />
+          </Route>
+          <Route path="/users" exact>
+            <UsersPage />
           </Route>
           <Route path="/points" exact>
             <PointsPage />

@@ -1,12 +1,11 @@
 export const table = {
-  collection: "points",
-  label: "Instituciones",
+  collection: "users",
+  label: "Usuarios",
   fields: [
     {
       name: "id",
       label: "id",
       hidden: true,
-      type: "text",
     },
 
     {
@@ -39,7 +38,7 @@ export const table = {
     {
       name: "phone",
       label: "Telefono",
-      type: "number",
+      type: "text",
       onTable: true,
     },
     {
@@ -76,18 +75,32 @@ export const table = {
     {
       name: "city",
       label: "Localidad",
-      type: "customCities",
-      onTable: true,
+      type: "text",
+    },
+    {
+      name: "region",
+      label: "Departamento",
+      type: "text",
+    },
+    {
+      name: "state",
+      label: "Provincia",
+      type: "text",
+    },
+    {
+      name: "country",
+      label: "Pais",
+      type: "text",
     },
     {
       name: "latitud",
       label: "Latitud",
-      type: "number",
+      type: "text",
     },
     {
       name: "longitude",
       label: "Longitud",
-      type: "number",
+      type: "text",
     },
   ],
 };

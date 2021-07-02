@@ -1,10 +1,23 @@
 import React from "react";
+
 import { Link } from "react-router-dom";
 import Layout from "../../components/Layout";
 import DataTable from "../../components/DataTable";
-import { table } from "../../data/points";
+import { table } from "../../data/users";
 
-const PointsPage = () => {
+const UsersPage = () => {
+  // firebase_admin
+  //   .auth()
+  //   .listUsers(1000, null)
+  //   .then((listUsersResult) => {
+  //     listUsersResult.users.forEach((userRecord) => {
+  //       console.log("user", userRecord.toJSON());
+  //     });
+  //   })
+  //   .catch((error) => {
+  //     console.log("Error listing users:", error);
+  //   });
+
   return (
     <Layout>
       <div class="container px-6 mx-auto grid">
@@ -19,19 +32,13 @@ const PointsPage = () => {
             >
               Agregar
             </Link>
-            <Link
-              to={`/${table.collection}/new`}
-              className="p-2 bg-green-500 inline rounded text-white text-sm"
-            >
-              Importar Archivo
-            </Link>
           </div>
         </div>
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
-          <DataTable table={table}></DataTable>
+          USUARIOS lista
         </div>
       </div>
     </Layout>
   );
 };
-export default PointsPage;
+export default UsersPage;
