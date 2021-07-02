@@ -20,7 +20,7 @@ const PointsPage = () => {
               Agregar
             </Link>
             <Link
-              to={`/${table.collection}/new`}
+              to={`/${table.collection}/import`}
               className="p-2 bg-green-500 inline rounded text-white text-sm"
             >
               Importar Archivo

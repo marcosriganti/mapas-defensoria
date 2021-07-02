@@ -9,7 +9,9 @@ import { ProvideAuth, useAuth } from "./components/Auth";
 import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
 import UsersPage from "./pages/users";
+
 import PointsPage from "./pages/points";
+import PointsImportPage from "./pages/points/import";
 import PointsAddPage from "./pages/points/new";
 import PointsEditPage from "./pages/points/edit";
 
@@ -55,6 +57,9 @@ function App() {
           </Route>
           <Route path="/points" exact>
             <PointsPage />
+          </Route>
+          <Route path="/points/import" exact>
+            <PointsImportPage />
           </Route>
           <Route path="/points/new" exact>
             <PointsAddPage />
