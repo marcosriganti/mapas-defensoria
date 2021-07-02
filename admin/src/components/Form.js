@@ -126,6 +126,7 @@ const TypeTags = ({ field, handleChange, values }) => {
           tagInputField:
             "block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input",
         }}
+        autofocus={false}
         tags={values[field.name] ? values[field.name] : []}
         delimiters={delimiters}
         handleDelete={handleDelete}
@@ -171,14 +172,6 @@ const TypeImage = ({ field, handleChange, values }) => {
           />
         </label>
       </div>
-      {/* <input
-        name={field.name}
-        onChange={(ev) => handleChange(field.name, ev.target.value)}
-        className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-        placeholder=""
-        type="text"
-        value={values[field.name] ? values[field.name] : ""}
-      /> */}
     </label>
   );
 };
