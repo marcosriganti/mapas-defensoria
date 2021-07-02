@@ -26,6 +26,11 @@ export const table = {
       onTable: true,
     },
     {
+      name: "image",
+      label: "Foto/Imagen",
+      type: "image",
+    },
+    {
       name: "description",
       label: "Descripcion",
       type: "textarea",
