@@ -23,7 +23,6 @@ const PointsPage = () => {
   const acceptedFileItems = acceptedFiles.map((file) => (
     <li key={file.path} className="font-bold my-4">
       {file.path} - {file.size} bytes
-      {JSON.stringify(file)}
     </li>
   ));
 
