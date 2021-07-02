@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Autocomplete from "react-autocomplete";
+import { WithContext as ReactTags } from "react-tag-input";
+
 import cities from "../data/cities.json";
 
 const TypeNumber = ({ field, handleChange, values }) => {
@@ -69,7 +71,6 @@ const TypeSelect = ({ field, handleChange, values }) => {
   );
 };
 const TypeCities = ({ field, handleChange, values }) => {
-  let value = "test";
   return (
     <label className="block text-sm">
       <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
@@ -91,11 +92,46 @@ const TypeCities = ({ field, handleChange, values }) => {
             </div>
           )}
           value={values[field.name] ? values[field.name] : ""}
-          // value={value}
           onChange={(ev) => handleChange(field.name, ev.target.value)}
           onSelect={(val) => handleChange(field.name, val)}
         />
       </div>
+    </label>
+  );
+};
+const TypeTags = ({ field, handleChange, values }) => {
+  const KeyCodes = {
+    comma: 188,
+    enter: 13,
+  };
+
+  const delimiters = [KeyCodes.comma, KeyCodes.enter];
+  const handleAddition = (tag) => {
+    const base = values[field.name] ? values[field.name] : [];
+    const newValue = [...base, tag];
+    handleChange(field.name, newValue);
+  };
+  const handleDelete = (i) => {
+    const base = values[field.name] ? values[field.name] : [];
+    handleChange(
+      field.name,
+      base.filter((tag, index) => index !== i)
+    );
+  };
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+
+      <ReactTags
+        tags={values[field.name] ? values[field.name] : []}
+        delimiters={delimiters}
+        handleDelete={handleDelete}
+        handleAddition={handleAddition}
+        placeholder={`Ingrese ${field.label}`}
+        // handleDrag={this.handleDrag}
+        // handleTagClick={this.handleTagClick}
+        inputFieldPosition="bottom"
+      />
     </label>
   );
 };
@@ -123,6 +159,7 @@ const types = {
   textarea: TypeTextarea,
   select: TypeSelect,
   customCities: TypeCities,
+  tag: TypeTags,
 };
 
 const Form = ({ fields, onSubmit, initialValues }) => {

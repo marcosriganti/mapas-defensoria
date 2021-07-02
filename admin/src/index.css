@@ -85,3 +85,15 @@ code {
 label.block input[role="combobox"] {
   width: 100%;
 }
+
+.tag-wrapper {
+  @apply px-2 py-1 text-sm bg-purple-400 text-white rounded-full;
+}
+
+.ReactTags__remove {
+  @apply text-white;
+}
+
+.ReactTags__selected {
+  @apply space-x-3 my-3;
+}

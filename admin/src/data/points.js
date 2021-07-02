@@ -80,6 +80,11 @@ export const table = {
       onTable: true,
     },
     {
+      name: "tags",
+      label: "Etiquetas",
+      type: "tag",
+    },
+    {
       name: "latitud",
       label: "Latitud",
       type: "number",

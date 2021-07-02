@@ -13,5 +13,11 @@ export const table = {
       type: "text",
       onTable: true,
     },
+    {
+      name: "children",
+      label: "Subcategorias",
+      type: "tag",
+      onTable: true,
+    },
   ],
 };

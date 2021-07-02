@@ -70,7 +70,16 @@ const DataTable = ({ table }) => {
                       if (field.onTable) {
                         return (
                           <td className="px-4 py-3 text-sm">
-                            {item[field.name]}
+                            {typeof item[field.name] == "string" &&
+                              item[field.name]}
+                            {field.type === "tag" &&
+                              item[field.name] &&
+                              item[field.name].map((el) => (
+                                <span className="block-inline bg-purple-400 px-2 py-1 text-xs text-white mx-1">
+                                  {el.id}
+                                </span>
+                              ))}
+                            {/* {item[field.name]} */}
                           </td>
                         );
                       }
