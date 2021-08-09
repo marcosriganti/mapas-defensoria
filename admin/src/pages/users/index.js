@@ -1,22 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Link } from "react-router-dom";
 import Layout from "../../components/Layout";
 import DataTable from "../../components/DataTable";
 import { table } from "../../data/users";
 
+// var admin = require("firebase-admin");
+// var serviceAccount = require("../../defensoria-sf-firebase-adminsdk-v3wlf-d42999c6b7.json");
+
+// const default_admin = admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
+// const defaultAuth = default_admin.auth();
+
 const UsersPage = () => {
-  // firebase_admin
-  //   .auth()
-  //   .listUsers(1000, null)
-  //   .then((listUsersResult) => {
-  //     listUsersResult.users.forEach((userRecord) => {
-  //       console.log("user", userRecord.toJSON());
-  //     });
-  //   })
-  //   .catch((error) => {
-  //     console.log("Error listing users:", error);
-  //   });
+  // useEffect(() => {
+  //   console.log("trying to make  a query");
+
+  // }, []);
 
   return (
     <Layout>

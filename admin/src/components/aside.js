@@ -78,7 +78,7 @@ export const Aside = () => {
               <span className="ml-4">Instituciones</span>
             </Link>
           </li>
-          {/* <li className="relative px-6 py-3">
+          <li className="relative px-6 py-3">
             <Link
               className="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
               to="/users"
@@ -94,7 +94,7 @@ export const Aside = () => {
               </svg>
               <span className="ml-4">Usuarios</span>
             </Link>
-          </li> */}
+          </li>
         </ul>
       </div>
     </aside>

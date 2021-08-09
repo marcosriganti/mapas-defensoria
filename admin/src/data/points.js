@@ -23,6 +23,7 @@ export const table = {
       name: "name",
       label: "Nombre de la Institucion",
       type: "text",
+      required: true,
       onTable: true,
     },
     {
@@ -34,6 +35,7 @@ export const table = {
       name: "description",
       label: "Descripcion",
       type: "textarea",
+      required: true,
     },
     {
       name: "extended_description",
@@ -83,6 +85,7 @@ export const table = {
       label: "Localidad",
       type: "customCities",
       onTable: true,
+      required: true,
     },
     {
       name: "tags",
