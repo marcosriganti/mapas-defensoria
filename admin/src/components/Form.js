@@ -31,6 +31,7 @@ const TypeText = ({ field, handleChange, values }) => {
         className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
         placeholder=""
         type="text"
+        minLength={field.min || 0}
         value={values[field.name] ? values[field.name] : ""}
       />
     </label>
@@ -198,7 +199,6 @@ const Form = ({ fields, onSubmit, initialValues }) => {
     <div>
       {fields.map((field) => {
         const Element = types[field.type];
-        console.log(field.type);
         return (
           Element &&
           !field.hidden && (

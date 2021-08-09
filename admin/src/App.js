@@ -11,6 +11,7 @@ import HomePage from "./pages/Home";
 
 import UsersPage from "./pages/users";
 import UsersAddPage from "./pages/users/new";
+import UsersEditPage from "./pages/users/edit";
 
 import PointsPage from "./pages/points";
 import PointsImportPage from "./pages/points/import";
@@ -62,6 +63,9 @@ function App() {
           </Route>
           <Route path="/users/new" exact>
             <UsersAddPage />
+          </Route>
+          <Route path="/users/edit/:id" exact>
+            <UsersEditPage />
           </Route>
 
           <Route path="/points" exact>

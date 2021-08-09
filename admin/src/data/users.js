@@ -8,12 +8,6 @@ export const table = {
       hidden: true,
     },
     {
-      name: "displayName",
-      label: "Nombre",
-      type: "text",
-      onTable: true,
-    },
-    {
       name: "email",
       label: "Email",
       type: "text",
@@ -23,6 +17,7 @@ export const table = {
       name: "password",
       label: "Password",
       type: "text",
+      min: 6,
     },
     {
       name: "metadata.lastSignInTime",

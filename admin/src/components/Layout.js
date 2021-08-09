@@ -100,7 +100,7 @@ const Layout = ({ children }) => {
   return (
     <div className="flex  bg-gray-50 dark:bg-gray-900">
       <Aside />
-      <div className="flex flex-col flex-1 w-full">
+      <div className="flex flex-col flex-1 w-full h-screen">
         <Header />
         <main>{children}</main>
       </div>

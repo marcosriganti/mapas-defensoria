@@ -2,19 +2,37 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../components/Layout";
+import { useAuth } from "../../components/Auth";
 import { Table } from "../../components/DataTable";
 import { table } from "../../data/users";
 
 const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
-  useEffect(() => {
+  let auth = useAuth();
+  const load = () =>
     axios.get(`https://defensoria-sf.web.app/api/v1/users`).then((res) => {
       const users = res.data;
       setItems(users);
       setLoading(false);
     });
+  useEffect(() => {
+    load();
   }, []);
+
+  const onDelete = (uid) => {
+    if (uid === auth.user.uid) {
+      alert("No puedes eliminarte a ti mismo");
+      return false;
+    }
+    if (window.confirm("Seguro quiere eliminar al usuario?")) {
+      axios
+        .delete(`https://defensoria-sf.web.app/api/v1/users/${uid}`)
+        .then((res) => {
+          load();
+        });
+    }
+  };
 
   return (
     <Layout>
@@ -35,7 +53,12 @@ const UsersPage = () => {
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
           {/*  Table  */}
           {!loading && (
-            <Table loading={loading} items={items} table={table}></Table>
+            <Table
+              loading={loading}
+              items={items}
+              table={table}
+              onDelete={onDelete}
+            ></Table>
           )}
           {/* Table End */}
         </div>

@@ -30,7 +30,6 @@ interface Contact {
 }
 
 interface User {
-  displayName: string;
   password: string;
   email: string;
 }
@@ -116,7 +115,7 @@ app.delete("/contacts/:contactId", async (req, res) => {
 
 app.get("/users", (req, res) => {
   auth
-    auth.listUsers(1000)
+    .listUsers(1000)
     .then((listUsersResult) => {
       const data = [];
       listUsersResult.users.forEach((userRecord) => {
@@ -128,28 +127,61 @@ app.get("/users", (req, res) => {
       console.log("Error listing users:", error);
     });
 });
-
+// Get Users List
 app.post("/users", async (req, res) => {
-  try {
-    const user: User = {
-      displayName: req.body.firstName,
-      password: req.body.lastName,
-      email: req.body.email,
-    };
+  const user: User = {
+    password: req.body.password,
+    email: req.body.email,
+  };
+  const userInfo = {
+    email: user.email,
+    emailVerified: false,
+    password: user.password,
+    disabled: false,
+  };
+  auth
+    .createUser(userInfo)
+    .then((userRecord) => {
+      res.status(201).send(
+        // eslint-disable-next-line comma-dangle
+        `Usuario Creado: ${userRecord.uid}`
+      );
+    })
+    .catch((error) => {
+      res.status(400).send(`Error: ${error}`);
+    });
+  // }
+});
+// Gets the User
+app.get("/users/:userId", (req, res) => {
+  auth
+    .getUser(req.params.userId)
+    .then((userRecord) => res.status(200).send(userRecord))
+    .catch((error) => res.status(400).send(`Cannot get userRecord: ${error}`));
+});
 
-    auth.createUser({
-       email: user.email,
-       emailVerified: false,
-       password: user.password,
-       displayName: user.displayName,
-       disabled: false,
-     }).then(userRecord => {
-       res.status(201).send(`Created a new User: ${newDoc.uid}`);
-     })
+app.patch("/users/:userId", async (req, res) => {
+  const user: User = {
+    password: req.body.password,
+    email: req.body.email,
+  };
+  auth
+    .updateUser(req.params.userId, user)
+    .then((userRecord) => {
+      res.status(204).send(`Update a User : ${userRecord.uid}`);
+    })
+    .catch((error) => {
+      res.status(400).send(`Error: ${error}`);
+    });
+});
 
-  } catch (error) {
-    res
-      .status(400)
-      .send("Contact should only contains firstName, lastName and email!!!");
-  }
+app.delete("/users/:userId", async (req, res) => {
+  auth
+    .deleteUser(req.params.userId)
+    .then(() => {
+      res.status(204).send(`User is deleted: ${req.params.userId}`);
+    })
+    .catch((error) => {
+      res.status(400).send(`Error: ${error}`);
+    });
 });

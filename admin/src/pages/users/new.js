@@ -2,24 +2,22 @@ import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../components/Layout";
+
 import Form from "../../components/Form";
 
 import { table } from "../../data/users";
 
 const UsersAddPage = () => {
   let history = useHistory();
+
   const onSubmit = async (values) => {
-    // Call the API
-    // const newRef = firebase_app.firestore().collection(table.collection).doc();
-    // await newRef.set(values);
-    //
     axios
-      .post(`https://defensoria-sf.web.app/api/v1/users`, { values })
+      .post(`https://defensoria-sf.web.app/api/v1/users`, { ...values })
       .then((res) => {
-        console.log(res);
         history.replace(`/${table.collection}`);
       });
   };
+
   return (
     <Layout>
       <div className="container px-6 mx-auto grid">
