@@ -5,8 +5,20 @@
       "npm --prefix \"$RESOURCE_DIR\" run build"
     ]
   },
+
   "hosting": {
     "public": "public",
+    "headers": [
+      {
+        "source": "index.html",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      }
+    ],
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {

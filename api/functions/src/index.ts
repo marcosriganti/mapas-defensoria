@@ -4,6 +4,8 @@ import * as express from "express";
 import { backup } from "firestore-export-import";
 import * as bodyParser from "body-parser";
 
+const cors = require("cors");
+
 admin.initializeApp(functions.config().firebase);
 
 const db = admin.firestore();
@@ -11,8 +13,9 @@ const auth = admin.auth();
 const app = express();
 const main = express();
 // const pointsCollection = "points";
-
+app.use(cors({ origin: true }));
 main.use("/api/v1", app);
+main.use(cors({ origin: true }));
 main.use(bodyParser.json());
 const opt = { extended: false };
 main.use(bodyParser.urlencoded(opt));

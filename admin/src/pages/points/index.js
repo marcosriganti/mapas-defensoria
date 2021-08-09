@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Layout from "../../components/Layout";
-import DataTable from "../../components/DataTable";
+import { DataTable } from "../../components/DataTable";
 import { table } from "../../data/points";
 
 const PointsPage = () => {

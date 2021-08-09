@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 import { Link } from "react-router-dom";
 import Layout from "../../components/Layout";
-import DataTable from "../../components/DataTable";
+import { Table } from "../../components/DataTable";
 import { table } from "../../data/users";
 
 // var admin = require("firebase-admin");
@@ -14,10 +15,43 @@ import { table } from "../../data/users";
 // const defaultAuth = default_admin.auth();
 
 const UsersPage = () => {
-  // useEffect(() => {
-  //   console.log("trying to make  a query");
+  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState([]);
+  useEffect(() => {
+    console.log("trying to make  a query");
 
-  // }, []);
+    axios.get(`https://defensoria-sf.web.app/api/v1/users`).then((res) => {
+      console.log(res);
+      const users = res.data;
+      setItems(users);
+      setLoading(false);
+    });
+
+    // fetch(US)
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .then(
+    //     (result) => {
+    //       console.log(result);
+    //       // this.setState({
+    //       //   isLoaded: true,
+    //       //   items: result.items,
+    //       // });
+    //     },
+    //     // Note: it's important to handle errors here
+    //     // instead of a catch() block so that we don't swallow
+    //     // exceptions from actual bugs in components.
+    //     (error) => {
+    //       console.log(error);
+    //       setLoading(false);
+    //       // this.setState({
+    //       //   isLoaded: true,
+    //       //   error,
+    //       // });
+    //     }
+    //   );
+  }, []);
 
   return (
     <Layout>
@@ -36,7 +70,11 @@ const UsersPage = () => {
           </div>
         </div>
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
-          USUARIOS lista
+          {/*  Table  */}
+          {!loading && (
+            <Table loading={loading} items={items} table={table}></Table>
+          )}
+          {/* Table End */}
         </div>
       </div>
     </Layout>
