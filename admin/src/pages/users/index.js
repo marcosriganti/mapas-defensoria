@@ -10,15 +10,16 @@ const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   let auth = useAuth();
-  const load = () =>
-    axios.get(`https://defensoria-sf.web.app/api/v1/users`).then((res) => {
-      const users = res.data;
-      setItems(users);
-      setLoading(false);
-    });
+
   useEffect(() => {
-    load();
-  }, []);
+    if (loading) {
+      axios.get(`https://defensoria-sf.web.app/api/v1/users`).then((res) => {
+        const users = res.data;
+        setItems(users);
+        setLoading(false);
+      });
+    }
+  }, [loading]);
 
   const onDelete = (uid) => {
     if (uid === auth.user.uid) {
@@ -29,7 +30,7 @@ const UsersPage = () => {
       axios
         .delete(`https://defensoria-sf.web.app/api/v1/users/${uid}`)
         .then((res) => {
-          load();
+          setLoading(true);
         });
     }
   };

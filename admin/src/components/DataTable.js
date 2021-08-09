@@ -34,6 +34,7 @@ export const Table = ({ table, items, loading, onDelete }) => {
                 if (field.onTable) {
                   return <th className="px-4 py-3">{field.label}</th>;
                 }
+                return null;
               })}
               <th className="px-4 py-3 w-40 text-right">Acciones</th>
             </tr>
@@ -62,6 +63,7 @@ export const Table = ({ table, items, loading, onDelete }) => {
                         </td>
                       );
                     }
+                    return null;
                   })}
 
                   <td className="px-4 py-3 text-sm text-right">
@@ -118,25 +120,27 @@ export const DataTable = ({ table }) => {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    firebase_app
-      .firestore()
-      .collection(table.collection)
-      .get()
-      .then((querySnapshot) => {
-        const newArray = [];
-        querySnapshot.forEach((doc) => {
-          newArray.push({
-            id: doc.id,
-            ...doc.data(),
+    if (loading) {
+      firebase_app
+        .firestore()
+        .collection(table.collection)
+        .get()
+        .then((querySnapshot) => {
+          const newArray = [];
+          querySnapshot.forEach((doc) => {
+            newArray.push({
+              id: doc.id,
+              ...doc.data(),
+            });
           });
+          setItems(newArray);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
         });
-        setItems(newArray);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.log("Error getting document:", error);
-      });
-  }, []);
+    }
+  }, [table, loading]);
   return (
     <>
       <Table table={table} loading={loading} items={items} />
