@@ -8,7 +8,9 @@ import {
 import { ProvideAuth, useAuth } from "./components/Auth";
 import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
+
 import UsersPage from "./pages/users";
+import UsersAddPage from "./pages/users/new";
 
 import PointsPage from "./pages/points";
 import PointsImportPage from "./pages/points/import";
@@ -55,6 +57,13 @@ function App() {
           <Route path="/users" exact>
             <UsersPage />
           </Route>
+          <Route path="/users" exact>
+            <UsersPage />
+          </Route>
+          <Route path="/users/new" exact>
+            <UsersAddPage />
+          </Route>
+
           <Route path="/points" exact>
             <PointsPage />
           </Route>

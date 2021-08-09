@@ -29,6 +29,12 @@ interface Contact {
   email: string;
 }
 
+interface User {
+  displayName: string;
+  password: string;
+  email: string;
+}
+
 const getDocument = (collectionName: string, documentId: string) => {
   const docRef = db.collection(collectionName).doc(documentId);
   return docRef
@@ -110,7 +116,7 @@ app.delete("/contacts/:contactId", async (req, res) => {
 
 app.get("/users", (req, res) => {
   auth
-    .listUsers(1000)
+    auth.listUsers(1000)
     .then((listUsersResult) => {
       const data = [];
       listUsersResult.users.forEach((userRecord) => {
@@ -121,4 +127,29 @@ app.get("/users", (req, res) => {
     .catch((error) => {
       console.log("Error listing users:", error);
     });
+});
+
+app.post("/users", async (req, res) => {
+  try {
+    const user: User = {
+      displayName: req.body.firstName,
+      password: req.body.lastName,
+      email: req.body.email,
+    };
+
+    auth.createUser({
+       email: user.email,
+       emailVerified: false,
+       password: user.password,
+       displayName: user.displayName,
+       disabled: false,
+     }).then(userRecord => {
+       res.status(201).send(`Created a new User: ${newDoc.uid}`);
+     })
+
+  } catch (error) {
+    res
+      .status(400)
+      .send("Contact should only contains firstName, lastName and email!!!");
+  }
 });
