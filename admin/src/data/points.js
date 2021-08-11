@@ -71,6 +71,11 @@ export const table = {
       type: "text",
     },
     {
+      name: "youtube",
+      label: "Youtube",
+      type: "text",
+    },
+    {
       name: "instagram",
       label: "Instagram",
       type: "text",

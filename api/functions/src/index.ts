@@ -185,3 +185,47 @@ app.delete("/users/:userId", async (req, res) => {
       res.status(400).send(`Error: ${error}`);
     });
 });
+// Masive
+app.post("/points", async (req, res) => {
+  const parseRecord = (row) => ({
+    name: row.nombre_institucion || null,
+    description: row.descripcion || null,
+    extended_description: row.informacion_detallada || null,
+    address: row.direccion || null,
+    email: row.email || null,
+    instagram: row.instagram || null,
+    facebook: row.facebook || null,
+    linkedin: row.linkedin || null,
+    twitter: row.twitter || null,
+    youtube: row.youtube || null,
+    phone: row.telefono || null,
+    latitud: row.latitud || null,
+    longitude: row.longitud || null,
+    city: row.localidad || null,
+  });
+  try {
+    let batch = db.batch();
+    const records = req.body.content;
+    /*
+  categoria: "Defensoría del Pueblo"
+  etiquetas: "Defensoría del Pueblo; Rosario"
+  subcategoria: "Sede Rosario"
+  */
+    // eslint-disable-next-line array-callback-return
+    records.map((record, index) => {
+      const newPointRef = db.collection("points").doc();
+      batch.set(newPointRef, parseRecord(record));
+      if (index % 500 === 0) {
+        batch.commit();
+        batch = db.batch();
+      }
+    });
+    batch.commit();
+
+    res.status(201).send("records updated");
+  } catch (error) {
+    res
+      .status(400)
+      .send("Contact should only contains firstName, lastName and email!!!");
+  }
+});

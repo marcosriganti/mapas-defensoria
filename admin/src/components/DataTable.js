@@ -115,7 +115,7 @@ export const Table = ({ table, items, loading, onDelete }) => {
     </div>
   );
 };
-export const DataTable = ({ table }) => {
+export const DataTable = ({ table, onDelete }) => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
 
@@ -143,7 +143,12 @@ export const DataTable = ({ table }) => {
   }, [table, loading]);
   return (
     <>
-      <Table table={table} loading={loading} items={items} />
+      <Table
+        table={table}
+        loading={loading}
+        items={items}
+        onDelete={onDelete}
+      />
       {/* <div className="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
           <span className="flex items-center col-span-3">
             Showing 21-30 of 100

@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../../components/Layout";
 import { DataTable } from "../../components/DataTable";
+import { firebase_app } from "../../firebase";
 import { table } from "../../data/points";
 
 const PointsPage = () => {
+  const [reload, setReload] = useState(null);
+  const onDelete = async (uid) => {
+    if (window.confirm("Seguro quiere eliminar la institucion?")) {
+      await firebase_app
+        .firestore()
+        .collection(table.collection)
+        .doc(uid)
+        .delete();
+      window.location.reload();
+    }
+  };
   return (
     <Layout>
-      <div class="container px-6 mx-auto grid">
+      <div className="container px-6 mx-auto grid">
         <div className="flex justify-between my-6">
-          <h2 class=" text-2xl font-semibold text-gray-700 dark:text-gray-200">
+          <h2 className=" text-2xl font-semibold text-gray-700 dark:text-gray-200">
             {table.label}
           </h2>
           <div className="space-x-2">
@@ -27,8 +39,12 @@ const PointsPage = () => {
             </Link>
           </div>
         </div>
-        <div class="w-full overflow-hidden rounded-lg shadow-xs">
-          <DataTable table={table}></DataTable>
+        <div className="w-full overflow-hidden rounded-lg shadow-xs">
+          <DataTable
+            table={table}
+            onDelete={onDelete}
+            reload={reload}
+          ></DataTable>
         </div>
       </div>
     </Layout>
