@@ -39,6 +39,13 @@ const PointsPage = () => {
             </Link>
           </div>
         </div>
+        <div
+          class="block text-sm text-left text-gray-600 bg-gray-200 border border-gray-400 h-12 flex items-center p-4 rounded-sm my-4"
+          role="alert"
+        >
+          Registros importados pueden demorar entre 5-15 minutos estar
+          disponibles.
+        </div>
         <div className="w-full overflow-hidden rounded-lg shadow-xs">
           <DataTable
             table={table}

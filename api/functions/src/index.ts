@@ -186,31 +186,53 @@ app.delete("/users/:userId", async (req, res) => {
     });
 });
 // Masive
-app.post("/points", async (req, res) => {
-  const parseRecord = (row) => ({
-    name: row.nombre_institucion || null,
-    description: row.descripcion || null,
-    extended_description: row.informacion_detallada || null,
-    address: row.direccion || null,
-    email: row.email || null,
-    instagram: row.instagram || null,
-    facebook: row.facebook || null,
-    linkedin: row.linkedin || null,
-    twitter: row.twitter || null,
-    youtube: row.youtube || null,
-    phone: row.telefono || null,
-    latitud: row.latitud || null,
-    longitude: row.longitud || null,
-    city: row.localidad || null,
+
+// const addCategory = async (name) => {
+//   const newDoc = await db
+//     .collection("categories")
+//     .add({ name })
+//     .then((docRef) => docRef)
+//     .catch((error) => error);
+//   return newDoc;
+// };
+const parseTags = (tags) => {
+  const r = [];
+  tags.split(";").forEach((key) => {
+    r.push({
+      text: key.trim(),
+      id: key.trim(),
+    });
   });
+  return r;
+};
+
+const parseRecord = (row) => ({
+  name: row.nombre_institucion || null,
+  description: row.descripcion || null,
+  extended_description: row.informacion_detallada || null,
+  address: row.direccion || null,
+  email: row.email || null,
+  instagram: row.instagram || null,
+  facebook: row.facebook || null,
+  linkedin: row.linkedin || null,
+  twitter: row.twitter || null,
+  youtube: row.youtube || null,
+  phone: row.telefono || null,
+  latitud: row.latitud || null,
+  longitude: row.longitud || null,
+  city: row.localidad || null,
+  subcategory: row.subcategoria || null,
+  category: row.categoria || null,
+  tags: row.etiquetas ? parseTags(row.etiquetas) : null,
+});
+
+app.post("/points", async (req, res) => {
+  // Get all the categories
+  //
   try {
     let batch = db.batch();
     const records = req.body.content;
-    /*
-  categoria: "Defensoría del Pueblo"
-  etiquetas: "Defensoría del Pueblo; Rosario"
-  subcategoria: "Sede Rosario"
-  */
+
     // eslint-disable-next-line array-callback-return
     records.map((record, index) => {
       const newPointRef = db.collection("points").doc();
@@ -224,8 +246,6 @@ app.post("/points", async (req, res) => {
 
     res.status(201).send("records updated");
   } catch (error) {
-    res
-      .status(400)
-      .send("Contact should only contains firstName, lastName and email!!!");
+    res.status(400).send(error);
   }
 });

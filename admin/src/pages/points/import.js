@@ -33,9 +33,9 @@ const PointsPage = () => {
 
   return (
     <Layout>
-      <div class="container px-6 mx-auto grid">
+      <div className="container px-6 mx-auto grid">
         <div className="flex justify-between my-6">
-          <h2 class=" text-2xl font-semibold text-gray-700 dark:text-gray-200">
+          <h2 className=" text-2xl font-semibold text-gray-700 dark:text-gray-200">
             {table.label}
           </h2>
           <div className="space-x-2">
@@ -47,10 +47,10 @@ const PointsPage = () => {
             </Link>
           </div>
         </div>
-        <div class="w-full overflow-hidden rounded-lg shadow-xs">
+        <div className="w-full overflow-hidden rounded-lg shadow-xs">
           <div className=" dropzone border-dashed border-4 border-purple-500 my-10 p-10 text-center bg-purple-50 text-gray-600 font-medium">
             <CSVReader
-              cssClass="react-csv-input"
+              cssclassName="react-csv-input"
               label="Selecciona el archivo CSV"
               onFileLoaded={handleForce}
               parserOptions={papaparseOptions}

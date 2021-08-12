@@ -100,12 +100,12 @@ export const table = {
     {
       name: "latitud",
       label: "Latitud",
-      type: "number",
+      type: "text",
     },
     {
       name: "longitude",
       label: "Longitud",
-      type: "number",
+      type: "text",
     },
   ],
 };
