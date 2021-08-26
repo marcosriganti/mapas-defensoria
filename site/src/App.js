@@ -115,18 +115,46 @@ function App() {
           </div>
         </div>
       </header>
-      <main className="py-20">
+      <main className="py-16">
         <div className="container mx-auto">
           <div className="grid grid-cols-4 gap-3">
             <div>
-              <ul>
-                {categories.map(item => {
+              <ul className="space-y-2">
+                {categories.map((item, index) => {
+                  // const checked = item.checked || false;
+                  let displaySub = item.checked || false;
                   return (
-                    <li>
-                      <label className="bg-red my-3 text-black block space-x-3 flex items-center">
-                        <input type="checkbox" name="category" />
+                    <li className="text-sm " key={`cat-${index}`}>
+                      <label className="bg-gray-100 border rounded-lg p-2 text-black block space-x-3 flex items-center">
+                        <input
+                          type="checkbox"
+                          name="category"
+                          checked={item.checked}
+                          onClick={ev => {
+                            const newArray = categories;
+                            newArray[index] = {
+                              ...item,
+                              checked: ev.target.checked,
+                            };
+                            if (ev.target.checked) displaySub = true;
+                            setCategories(newArray);
+                          }}
+                        />
                         <span>{item.name}</span>
                       </label>
+                      {item.children && (
+                        <div>
+                          {item.children.map(child => {
+                            return (
+                              <label className="bg-white block  text-xs border rounded-lg  py-2 px-4 my-0.5  space-x-3 flex items-center ">
+                                {" "}
+                                <input type="checkbox" name="category" />
+                                <span>{child.text}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
                     </li>
                   );
                 })}
@@ -146,7 +174,52 @@ function App() {
           </div>
         </div>
       </main>
-      <footer></footer>
+
+      <footer
+        className=" bg-white py-16 border-t-4"
+        style={{ borderColor: "#afc75d" }}
+      >
+        <div className="container space-y-5">
+          <div className="grid text-gray-800 text-sm md:grid-cols-2">
+            <div>
+              <h3 className="font-bold text-xl">ROSARIO</h3>
+              <p>Tucumán 1681 - CP 2000 - Rosario</p>
+              <p>
+                Teléfonos: Lunes a viernes de 8.00 a 18.00 (0341) 156-914345
+              </p>
+              <p>info@defensorianna.gob.ar</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-xl">SANTA FE</h3>
+              <p>Eva Perón 2726 - CP 3000 - Santa Fe</p>
+              <p>
+                Teléfonos: Lunes a viernes de 8.00 a 18.00 (0342) 154-494569
+              </p>
+              <p>info@defensorianna.gob.ar</p>
+            </div>
+          </div>
+          <div className="grid text-gray-800 text-sm md:grid-cols-3 border-t  pt-5">
+            <div>
+              <h3 className="font-bold text-xl">RAFAELA</h3>
+              <p>Brown 73</p>
+              <p>Teléfonos: (03492) 45-3101</p>
+              <p>defensorrafaela@gmail.com</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-xl">RECONQUISTA</h3>
+              <p>Patricio Diez 985</p>
+              <p>Teléfonos: (03482) 43-8849</p>
+              <p>reconquista@defensorsantafe.gov.ar</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-xl">VENADO TUERTO</h3>
+              <p>9 de julio 1040</p>
+              <p>Teléfonos: (03462) 40-8868</p>
+              <p>venadotuerto@defensorsantafe.gov.ar</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
