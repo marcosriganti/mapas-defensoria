@@ -14,6 +14,12 @@ export const table = {
       onTable: true,
     },
     {
+      name: "description",
+      label: "Descripcion",
+      type: "textarea",
+      onTable: true,
+    },
+    {
       name: "children",
       label: "Subcategorias",
       type: "tag",
