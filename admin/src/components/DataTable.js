@@ -30,7 +30,7 @@ export const Table = ({ table, items, loading, onDelete }) => {
         <table className="w-full whitespace-no-wrap">
           <thead>
             <tr className="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-              {table.fields.map((field) => {
+              {table.fields.map(field => {
                 if (field.onTable) {
                   return <th className="px-4 py-3">{field.label}</th>;
                 }
@@ -40,13 +40,13 @@ export const Table = ({ table, items, loading, onDelete }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-            {items.map((item) => {
+            {items.map(item => {
               return (
                 <tr
                   className="text-gray-700 dark:text-gray-400"
                   key={`td-${item.uid || item.id}`}
                 >
-                  {table.fields.map((field) => {
+                  {table.fields.map(field => {
                     if (field.onTable) {
                       return (
                         <td className="px-4 py-3 text-sm">
@@ -54,7 +54,7 @@ export const Table = ({ table, items, loading, onDelete }) => {
                             item[field.name]}
                           {field.type === "tag" &&
                             item[field.name] &&
-                            item[field.name].map((el) => (
+                            item[field.name].map(el => (
                               <span className="block-inline bg-purple-400 px-2 py-1 text-xs text-white mx-1">
                                 {el.id}
                               </span>
@@ -124,10 +124,11 @@ export const DataTable = ({ table, onDelete }) => {
       firebase_app
         .firestore()
         .collection(table.collection)
+        .limit(20)
         .get()
-        .then((querySnapshot) => {
+        .then(querySnapshot => {
           const newArray = [];
-          querySnapshot.forEach((doc) => {
+          querySnapshot.forEach(doc => {
             newArray.push({
               id: doc.id,
               ...doc.data(),
@@ -136,7 +137,7 @@ export const DataTable = ({ table, onDelete }) => {
           setItems(newArray);
           setLoading(false);
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("Error getting document:", error);
         });
     }

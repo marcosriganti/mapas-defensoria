@@ -113,6 +113,16 @@ app.delete("/contacts/:contactId", async (req, res) => {
   res.status(204).send(`Contact is deleted: ${deletedContact}`);
 });
 
+// Real
+
+// Categorias
+// View all contacts
+app.get("/categories", (req, res) => {
+  backup("categories")
+    .then((data) => res.status(200).send(data))
+    .catch((error) => res.status(400).send(`Cannot get contacts: ${error}`));
+});
+
 app.get("/users", (req, res) => {
   auth
     .listUsers(1000)
