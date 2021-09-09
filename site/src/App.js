@@ -16,6 +16,7 @@ import mapConfig from "./config.json";
 
 import { setWithExpiry, getWithExpiry } from "./utils/localStorage";
 import { TypeCategories, TypeCities } from "./components/formElements";
+import headerImg from "./assets/images/header.png";
 
 function addMarkers(lonLatArray) {
   var iconStyle = new Style({
@@ -38,12 +39,11 @@ const FullMap = ({ list }) => {
   const [center, setCenter] = useState(mapConfig.center);
   const [zoom, setZoom] = useState(7);
   const [features, setFeatures] = useState(addMarkers(list));
-
   return (
     <Map center={fromLonLat(center)} zoom={zoom}>
       <Layers>
         <TileLayer source={osm()} zIndex={0} />
-        <VectorLayer source={vector({ features })} />
+        {features.length > 0 && <VectorLayer source={vector({ features })} />}
       </Layers>
       <Controls>
         <FullScreenControl />
@@ -151,8 +151,11 @@ function App() {
     <div>
       <header
         style={{ borderColor: "#afc75d" }}
-        className="border-b-4 py-4 bg-white"
+        className="border-b-4 pt-12  py-4 bg-white"
       >
+        <div>
+          <img src={headerImg} className="absolute top-0 w-full" />
+        </div>
         <div className="container mx-auto">
           <div className="flex flex-row items-center justify-between">
             <div>
@@ -266,6 +269,74 @@ function App() {
               <p>9 de julio 1040</p>
               <p>Teléfonos: (03462) 40-8868</p>
               <p>venadotuerto@defensorsantafe.gov.ar</p>
+            </div>
+          </div>
+        </div>
+        <div
+          className=" bg-white mt-10 pt-10 border-t-4"
+          style={{ borderColor: "#afc75d" }}
+        >
+          <div className="container">
+            <div className="sponsors flex flex-row justify-center">
+              <a
+                href="https://www.defensoriasantafe.gob.ar/ "
+                target="_blank"
+                className="flex-1"
+                rel="noreferrer"
+                title="Defensoría del pueblo"
+              >
+                <img
+                  src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-defensoria-del-pueblo.png"
+                  className="img-responsive"
+                />
+              </a>
+              <a
+                href="https://www.unicef.org/argentina/ "
+                target="_blank"
+                className="flex-1"
+                rel="noreferrer"
+                title="Unicef"
+              >
+                <img
+                  src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-unicef.png"
+                  className="img-responsive"
+                />
+              </a>
+              <a
+                href="http://www.defensorianna.gob.ar/observatorio/que-es-y-como-funciona-2740"
+                target="_blank"
+                className="flex-1"
+                rel="noreferrer"
+                title="Observatorio"
+              >
+                <img
+                  src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-observatorio.png"
+                  className="img-responsive"
+                />
+              </a>
+              <a
+                href="http://www.portalfio.org/red-ninez-adolescencia/"
+                target="_blank"
+                className="flex-1"
+                rel="noreferrer"
+                title="Red de Niñez"
+              >
+                <img
+                  src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-red-ninez-adolescencia.png"
+                  className="img-responsive"
+                />
+              </a>
+              <a
+                href="http://www.adpra.org.ar/"
+                target="_blank"
+                title="ADPRA"
+                rel="noreferrer"
+              >
+                <img
+                  src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-adpra.png"
+                  className="img-responsive"
+                />
+              </a>
             </div>
           </div>
         </div>
