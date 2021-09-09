@@ -157,7 +157,7 @@ function App() {
           <img src={headerImg} className="absolute top-0 w-full" />
         </div>
         <div className="container mx-auto">
-          <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4">
             <div>
               <img
                 src={logo}
@@ -172,9 +172,9 @@ function App() {
       </header>
       <main className="py-16">
         <div className="container mx-auto">
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid md:grid-cols-4 gap-3">
             <form autoComplete="off" onSubmit={handleSubmit}>
-              <div className="rounded-md bg-gray-100 pt-4 m-2 overflow-hidden p-3">
+              <div className="rounded-md bg-gray-100 pt-4 mx  -2 overflow-hidden p-3">
                 <h3 className="px-3 py-2  mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
                   Ubicación
                 </h3>
@@ -215,7 +215,7 @@ function App() {
                 </button>
               </div>
             </form>
-            <div className="col-span-3">
+            <div className="md:col-span-3 px-3">
               <div
                 id="mapa-santa-fe"
                 className="w-full"
@@ -232,7 +232,7 @@ function App() {
         className=" bg-white py-16 border-t-4"
         style={{ borderColor: "#afc75d" }}
       >
-        <div className="container space-y-5">
+        <div className="container space-y-5 px-6">
           <div className="grid text-gray-800 text-sm md:grid-cols-2">
             <div>
               <h3 className="font-bold text-xl">ROSARIO</h3>
@@ -276,7 +276,7 @@ function App() {
           className=" bg-white mt-10 pt-10 border-t-4"
           style={{ borderColor: "#afc75d" }}
         >
-          <div className="container">
+          <div className="container px-6">
             <div className="sponsors flex flex-row justify-center">
               <a
                 href="https://www.defensoriasantafe.gob.ar/ "

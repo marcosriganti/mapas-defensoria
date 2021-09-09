@@ -1,8 +1,14 @@
 .ol-map {
-    min-width: 600px;
+    min-width: 100%;
     min-height: 600px;
     height: 600px;
     width: "100%";
+}
+
+@media (min-width: 600px) {
+    .ol-map {
+        min-width: 600px;
+    }
 }
 
 .ol-control {
