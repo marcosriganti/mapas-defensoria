@@ -7,11 +7,15 @@ import Point from "ol/geom/Point";
 import axios from "axios";
 import { osm, vector } from "./Source";
 import { fromLonLat, get } from "ol/proj";
+
 import { Controls, FullScreenControl } from "./Controls";
 
 import logo from "./assets/images/logo.svg";
 import { firebase_app } from "./firebase";
 import mapConfig from "./config.json";
+
+import { setWithExpiry, getWithExpiry } from "./utils/localStorage";
+import { TypeCategories, TypeCities } from "./components/formElements";
 
 function addMarkers(lonLatArray) {
   var iconStyle = new Style({
@@ -47,54 +51,102 @@ const FullMap = ({ list }) => {
     </Map>
   );
 };
+
+const getCategories = async () => {
+  let cats = getWithExpiry("categories");
+  if (!cats) {
+    const res = await axios.get(
+      `https://defensoria-sf.web.app/api/v1/categories`
+    );
+    setWithExpiry("categories", res.data);
+    cats = res.data;
+  }
+  return cats;
+};
+const getSubcategories = async parent => {
+  const cats = await getCategories();
+  const categories = Object.values(cats.categories);
+  const children = categories.filter(item => item.name === parent);
+  if (children.length) {
+    return children[0].children;
+  }
+  return [];
+};
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
+  const [params, setParams] = useState({});
+  const [subcategories, setSubcategories] = useState([]);
   let list = [];
   const [featuresList, setFeaturesList] = useState([]);
+
   useEffect(() => {
     if (loading) {
-      axios.get(`https://defensoria-sf.web.app/api/v1/categories`).then(res => {
-        const cats = res.data;
+      const getCats = async () => {
+        const cats = await getCategories();
         setCategories(Object.values(cats.categories));
         setLoading(false);
-      });
-      firebase_app
-        .firestore()
-        .collection("points")
-        .limit(40)
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            const item = {
-              id: doc.id,
-              ...doc.data(),
-            };
-            if (
-              item.latitud &&
-              item.longitude &&
-              typeof item.latitud === "string"
-            ) {
-              list.push([
-                parseFloat(item.longitude.replace(",", ".")),
-                parseFloat(item.latitud.replace(",", ".")),
-              ]);
-            } else {
-              console.log("wrong data", doc.id, item.latitud, item.longitude);
-            }
-          });
-          // setItems(newArray);
+      };
+      getCats();
 
-          // console.log(newArray);
-          setLoading(false);
-          setFeaturesList(list);
-          // setFeatures(addMarkers(featuresList));
-        })
-        .catch(error => {
-          console.log("Error getting document:", error);
-        });
+      setLoading(false);
+      setFeaturesList([]);
     }
   }, [loading]);
+  const handleChange = (key, val) => {
+    setParams({
+      ...params,
+      [key]: val,
+    });
+    if (key === "category") {
+      getSubcategories(val).then(res => {
+        setSubcategories(res);
+      });
+    }
+  };
+  const handleSubmit = ev => {
+    ev.preventDefault();
+    console.log("Enviando");
+    setLoading(true);
+    firebase_app
+      .firestore()
+      .collection("points")
+      .limit(10)
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          const item = {
+            id: doc.id,
+            ...doc.data(),
+          };
+          if (
+            item.latitud &&
+            item.longitude &&
+            typeof item.latitud === "string"
+          ) {
+            list.push([
+              parseFloat(item.longitude.replace(",", ".")),
+              parseFloat(item.latitud.replace(",", ".")),
+            ]);
+          } else {
+            console.log("wrong data", doc.id, item.latitud, item.longitude);
+          }
+        });
+        // setItems(newArray);
+
+        // console.log(newArray);
+        setLoading(false);
+        setFeaturesList(list);
+        // setFeatures(addMarkers(featuresList));
+      })
+      .catch(error => {
+        console.log("Error getting document:", error);
+      });
+
+    return false;
+  };
+  const validForm = params.city && params.category;
   return (
     <div>
       <header
@@ -118,57 +170,55 @@ function App() {
       <main className="py-16">
         <div className="container mx-auto">
           <div className="grid grid-cols-4 gap-3">
-            <div>
-              <ul className="space-y-2">
-                {categories.map((item, index) => {
-                  // const checked = item.checked || false;
-                  let displaySub = item.checked || false;
-                  return (
-                    <li className="text-sm " key={`cat-${index}`}>
-                      <label className="bg-gray-100 border rounded-lg p-2 text-black block space-x-3 flex items-center">
-                        <input
-                          type="checkbox"
-                          name="category"
-                          checked={item.checked}
-                          onClick={ev => {
-                            const newArray = categories;
-                            newArray[index] = {
-                              ...item,
-                              checked: ev.target.checked,
-                            };
-                            if (ev.target.checked) displaySub = true;
-                            setCategories(newArray);
-                          }}
-                        />
-                        <span>{item.name}</span>
-                      </label>
-                      {item.children && (
-                        <div>
-                          {item.children.map(child => {
-                            return (
-                              <label className="bg-white block  text-xs border rounded-lg  py-2 px-4 my-0.5  space-x-3 flex items-center ">
-                                {" "}
-                                <input type="checkbox" name="category" />
-                                <span>{child.text}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            <form autoComplete="off" onSubmit={handleSubmit}>
+              <div className="rounded-md bg-gray-100 pt-4 m-2 overflow-hidden p-3">
+                <h3 className="px-3 py-2  mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
+                  Ubicación
+                </h3>
+                <TypeCities
+                  values={params}
+                  field={{ name: "city", label: "Ciudad" }}
+                  handleChange={handleChange}
+                />
+                <h3 className="px-3 py-2 mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
+                  Categoría
+                </h3>
+                <TypeCategories
+                  values={params}
+                  field={{ name: "category", label: "Principal" }}
+                  source={categories}
+                  handleChange={handleChange}
+                />
+                <TypeCategories
+                  values={params}
+                  field={{ name: "subcategory", label: "Secundaria" }}
+                  source={subcategories}
+                  handleChange={handleChange}
+                />
+
+                <h3 className="px-3 py-2  mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
+                  Etiquetas
+                </h3>
+                <button
+                  disabled={!validForm}
+                  type="submit"
+                  className={`px-4 py-2  font-semibold text-center text-white   block w-full rounded-md ${
+                    validForm
+                      ? `bg-green-400 hover:bg-green-300`
+                      : `bg-gray-400`
+                  }`}
+                >
+                  Buscar
+                </button>
+              </div>
+            </form>
             <div className="col-span-3">
               <div
                 id="mapa-santa-fe"
                 className="w-full"
-                style={{ height: 500 }}
+                // style={{ height: 500 }}
               >
-                {!loading && featuresList.length > 0 && (
-                  <FullMap list={featuresList}></FullMap>
-                )}
+                {!loading && <FullMap list={featuresList}></FullMap>}
               </div>
             </div>
           </div>
