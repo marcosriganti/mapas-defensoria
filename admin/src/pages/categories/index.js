@@ -3,8 +3,19 @@ import { Link } from "react-router-dom";
 import Layout from "../../components/Layout";
 import { DataTable } from "../../components/DataTable";
 import { table } from "../../data/categories";
+import { firebase_app } from "../../firebase";
 
 const CategoriesPage = () => {
+  const onDelete = async uid => {
+    if (window.confirm("Seguro quiere eliminar la categoria?")) {
+      await firebase_app
+        .firestore()
+        .collection(table.collection)
+        .doc(uid)
+        .delete();
+      window.location.reload();
+    }
+  };
   return (
     <Layout>
       <div className="container px-6 mx-auto grid">
@@ -20,7 +31,7 @@ const CategoriesPage = () => {
           </Link>
         </div>
         <div className="w-full overflow-hidden rounded-lg shadow-xs">
-          <DataTable table={table}></DataTable>
+          <DataTable table={table} onDelete={onDelete}></DataTable>
         </div>
       </div>
     </Layout>
