@@ -38,7 +38,13 @@ function addMarkers(lonLatArray) {
 const FullMap = ({ list }) => {
   const [center, setCenter] = useState(mapConfig.center);
   const [zoom, setZoom] = useState(7);
-  const [features, setFeatures] = useState(addMarkers(list));
+  const [features, setFeatures] = useState([]);
+  useEffect(() => {
+    if (list.length > 0) {
+      setFeatures(addMarkers(list));
+    }
+  }, [list]);
+
   return (
     <Map center={fromLonLat(center)} zoom={zoom}>
       <Layers>
@@ -75,6 +81,8 @@ const getSubcategories = async parent => {
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [seaching, setSearching] = useState(false);
+  const [result, setResult] = useState(null);
   const [categories, setCategories] = useState([]);
   const [params, setParams] = useState({});
   const [subcategories, setSubcategories] = useState([]);
@@ -91,9 +99,9 @@ function App() {
       getCats();
 
       setLoading(false);
-      setFeaturesList([]);
+      // setFeaturesList([]);
     }
-  }, [loading]);
+  }, []);
   const handleChange = (key, val) => {
     setParams({
       ...params,
@@ -107,8 +115,42 @@ function App() {
   };
   const handleSubmit = ev => {
     ev.preventDefault();
-    console.log("Enviando");
-    setLoading(true);
+    console.log("Enviando", params);
+    setSearching(true);
+    let list = [];
+    if (!params.city || !params.category) return false;
+
+    const query = firebase_app
+      .firestore()
+      .collection("points")
+      .where("city", "==", params.city)
+      .where("category", "==", params.category)
+      .limit(10)
+      .get();
+
+    query.then(querySnapshot => {
+      const points = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setResult(points);
+      setSearching(false);
+      points.map(item => {
+        if (
+          item.latitud &&
+          item.longitude &&
+          typeof item.latitud === "string"
+        ) {
+          list.push([
+            parseFloat(item.longitude.replace(",", ".")),
+            parseFloat(item.latitud.replace(",", ".")),
+          ]);
+        }
+      });
+      console.log("found points", points);
+      setFeaturesList(list);
+    });
+    return false;
     firebase_app
       .firestore()
       .collection("points")
@@ -211,8 +253,11 @@ function App() {
                       : `bg-gray-400`
                   }`}
                 >
-                  Buscar
+                  {seaching ? "Buscando..." : "Buscar"}
                 </button>
+                {result !== null && (
+                  <p className="text-gray-800 text-sm mt-2 text-center">{`Se ha/n encontrado ${result.length} resultado/s`}</p>
+                )}
               </div>
             </form>
             <div className="md:col-span-3 px-3">
