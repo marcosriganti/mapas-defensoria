@@ -46,7 +46,7 @@ const FullMap = ({ list, location }) => {
     }
     setCenter(location);
   }, [list, location]);
-
+  console.log("FullMap", features);
   const newLocation = fromLonLat(center);
   return (
     <Map center={newLocation} zoom={zoom}>

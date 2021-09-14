@@ -15,13 +15,12 @@ const VectorLayer = ({ source, style, zIndex = 0 }) => {
 
     map.addLayer(vectorLayer);
     vectorLayer.setZIndex(zIndex);
-    console.log(map, "adding layer ", source);
     return () => {
       if (map) {
         map.removeLayer(vectorLayer);
       }
     };
-  }, [map]);
+  }, [map, source]);
 
   return null;
 };
