@@ -13,6 +13,7 @@ import { Controls, FullScreenControl } from "./Controls";
 import logo from "./assets/images/logo.svg";
 import { firebase_app } from "./firebase";
 import mapConfig from "./config.json";
+import cities from "./assets/cities.json";
 
 import { setWithExpiry, getWithExpiry } from "./utils/localStorage";
 import { TypeCategories, TypeCities } from "./components/formElements";
@@ -35,18 +36,20 @@ function addMarkers(lonLatArray) {
   });
   return features;
 }
-const FullMap = ({ list }) => {
-  const [center, setCenter] = useState(mapConfig.center);
+const FullMap = ({ list, location }) => {
+  const [center, setCenter] = useState(location);
   const [zoom, setZoom] = useState(7);
   const [features, setFeatures] = useState([]);
   useEffect(() => {
     if (list.length > 0) {
       setFeatures(addMarkers(list));
     }
-  }, [list]);
+    setCenter(location);
+  }, [list, location]);
 
+  const newLocation = fromLonLat(center);
   return (
-    <Map center={fromLonLat(center)} zoom={zoom}>
+    <Map center={newLocation} zoom={zoom}>
       <Layers>
         <TileLayer source={osm()} zIndex={0} />
         {features.length > 0 && <VectorLayer source={vector({ features })} />}
@@ -86,6 +89,7 @@ function App() {
   const [categories, setCategories] = useState([]);
   const [params, setParams] = useState({});
   const [subcategories, setSubcategories] = useState([]);
+  const [location, setLocation] = useState([-60.1286333, -31.1672838]);
   let list = [];
   const [featuresList, setFeaturesList] = useState([]);
 
@@ -107,6 +111,18 @@ function App() {
       ...params,
       [key]: val,
     });
+    if (key === "city" && val) {
+      //check the latitud and
+      const item = cities.find(item => item.full_name === val);
+      if (item) {
+        if (item.lat && item.ltg && typeof item.lat === "string") {
+          setLocation([
+            parseFloat(item.ltg.replace(",", ".")),
+            parseFloat(item.lat.replace(",", ".")),
+          ]);
+        }
+      }
+    }
     if (key === "category") {
       getSubcategories(val).then(res => {
         setSubcategories(res);
@@ -124,11 +140,12 @@ function App() {
       .firestore()
       .collection("points")
       .where("city", "==", params.city)
-      .where("category", "==", params.category)
-      .limit(10)
-      .get();
+      .where("category", "==", params.category);
+    if (params.subcategory) {
+      query.where("subcategory", "==", params.subcategory);
+    }
 
-    query.then(querySnapshot => {
+    query.get().then(querySnapshot => {
       const points = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -147,48 +164,12 @@ function App() {
           ]);
         }
       });
-      console.log("found points", points);
       setFeaturesList(list);
     });
     return false;
-    firebase_app
-      .firestore()
-      .collection("points")
-      .limit(10)
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          const item = {
-            id: doc.id,
-            ...doc.data(),
-          };
-          if (
-            item.latitud &&
-            item.longitude &&
-            typeof item.latitud === "string"
-          ) {
-            list.push([
-              parseFloat(item.longitude.replace(",", ".")),
-              parseFloat(item.latitud.replace(",", ".")),
-            ]);
-          } else {
-            console.log("wrong data", doc.id, item.latitud, item.longitude);
-          }
-        });
-        // setItems(newArray);
-
-        // console.log(newArray);
-        setLoading(false);
-        setFeaturesList(list);
-        // setFeatures(addMarkers(featuresList));
-      })
-      .catch(error => {
-        console.log("Error getting document:", error);
-      });
-
-    return false;
   };
   const validForm = params.city && params.category;
+  console.log(result);
   return (
     <div>
       <header
@@ -196,7 +177,11 @@ function App() {
         className="border-b-4 pt-12  py-4 bg-white"
       >
         <div>
-          <img src={headerImg} className="absolute top-0 w-full" />
+          <img
+            src={headerImg}
+            className="absolute top-0 w-full"
+            alt="Defensoria de niñas, Niños y Adolecentes"
+          />
         </div>
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4">
@@ -261,13 +246,51 @@ function App() {
               </div>
             </form>
             <div className="md:col-span-3 px-3">
-              <div
-                id="mapa-santa-fe"
-                className="w-full"
-                // style={{ height: 500 }}
-              >
-                {!loading && <FullMap list={featuresList}></FullMap>}
+              <div id="mapa-santa-fe" className="w-full">
+                {!loading && (
+                  <FullMap list={featuresList} location={location}></FullMap>
+                )}
               </div>
+              {result && result.length > 0 && (
+                <div>
+                  <h2 className="text-green-600 text-2xl font-bold my-3">
+                    Resultados
+                  </h2>
+                  <div className="space-y-3">
+                    {result.map(item => (
+                      <div class="shadow-lg bg-white rounded-xl p-5 space-y-3">
+                        <header>
+                          <h2 class="text-green-500 text-xl font-bold">
+                            {item.name}
+                          </h2>
+                          <h3 className="text-base text-gray-500">
+                            {item.category} | {item.subcategory}
+                          </h3>
+                        </header>
+                        <div class="text-sm text-gray-800">
+                          <p>{item.description}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-sm  text-green-500 font-bold ">
+                            Direccion
+                          </h4>
+                          <div class="text-sm text-gray-800">
+                            {[item.address, item.city].join(", ")}
+                            {(item.email || item.phone) && (
+                              <div>
+                                <h4 className="text-sm  text-green-500 font-bold ">
+                                  Contacto
+                                </h4>{" "}
+                                <p>{[item.phone, item.email].join(" | ")}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
