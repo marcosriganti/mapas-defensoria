@@ -27,16 +27,44 @@ function addMarkers(lonLatArray) {
       src: mapConfig.markerImage32,
     }),
   });
-  let features = lonLatArray.map(item => {
+  let features = lonLatArray.map((item, index) => {
     let feature = new Feature({
-      geometry: new Point(fromLonLat(item)),
+      id: item.id,
+      geometry: new Point(fromLonLat(item.lonLat)),
     });
     feature.setStyle(iconStyle);
     return feature;
   });
   return features;
 }
-const FullMap = ({ list, location }) => {
+const ShowItem = ({ item }) => {
+  return (
+    <>
+      <header>
+        <h2 class="text-green-500 text-xl font-bold">{item.name}</h2>
+        <h3 className="text-base text-gray-500">
+          {item.category} | {item.subcategory}
+        </h3>
+      </header>
+      <div className="text-sm text-gray-800 overflow-auto h-48 pb-2">
+        <p>{item.description}</p>
+      </div>
+      <div>
+        <h4 className="text-sm  text-green-500 font-bold ">Direccion</h4>
+        <div class="text-sm text-gray-800">
+          {[item.address, item.city].join(", ")}
+          {(item.email || item.phone) && (
+            <div>
+              <h4 className="text-sm  text-green-500 font-bold ">Contacto</h4>{" "}
+              <p>{[item.phone, item.email].join(" | ")}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+const FullMap = ({ list, location, callback }) => {
   const [center, setCenter] = useState(location);
   const [zoom, setZoom] = useState(7);
   const [features, setFeatures] = useState([]);
@@ -46,10 +74,9 @@ const FullMap = ({ list, location }) => {
     }
     setCenter(location);
   }, [list, location]);
-  console.log("FullMap", features);
   const newLocation = fromLonLat(center);
   return (
-    <Map center={newLocation} zoom={zoom}>
+    <Map center={newLocation} zoom={zoom} callback={callback}>
       <Layers>
         <TileLayer source={osm()} zIndex={0} />
         {features.length > 0 && <VectorLayer source={vector({ features })} />}
@@ -83,6 +110,8 @@ const getSubcategories = async parent => {
 };
 
 function App() {
+  const [showModal, setShowModal] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState({});
   const [loading, setLoading] = useState(true);
   const [seaching, setSearching] = useState(false);
   const [result, setResult] = useState(null);
@@ -90,7 +119,6 @@ function App() {
   const [params, setParams] = useState({});
   const [subcategories, setSubcategories] = useState([]);
   const [location, setLocation] = useState([-60.1286333, -31.1672838]);
-  let list = [];
   const [featuresList, setFeaturesList] = useState([]);
 
   useEffect(() => {
@@ -101,11 +129,21 @@ function App() {
         setLoading(false);
       };
       getCats();
-
       setLoading(false);
-      // setFeaturesList([]);
     }
   }, []);
+
+  const handleFeature = collection => {
+    if (!collection || collection.length === 0) return;
+    const feature = collection[0];
+    const results = window.result;
+    const point = results.find(item => item.id === feature.values_.id);
+    if (point) {
+      setSelectedFeature(point);
+      setShowModal(true);
+    }
+  };
+
   const handleChange = (key, val) => {
     setParams({
       ...params,
@@ -131,7 +169,6 @@ function App() {
   };
   const handleSubmit = ev => {
     ev.preventDefault();
-    console.log("Enviando", params);
     setSearching(true);
     let list = [];
     if (!params.city || !params.category) return false;
@@ -151,6 +188,7 @@ function App() {
         ...doc.data(),
       }));
       setResult(points);
+      window.result = points;
       setSearching(false);
       points.map(item => {
         if (
@@ -158,10 +196,13 @@ function App() {
           item.longitude &&
           typeof item.latitud === "string"
         ) {
-          list.push([
-            parseFloat(item.longitude.replace(",", ".")),
-            parseFloat(item.latitud.replace(",", ".")),
-          ]);
+          list.push({
+            id: item.id,
+            lonLat: [
+              parseFloat(item.longitude.replace(",", ".")),
+              parseFloat(item.latitud.replace(",", ".")),
+            ],
+          });
         }
       });
       setFeaturesList(list);
@@ -169,7 +210,6 @@ function App() {
     return false;
   };
   const validForm = params.city && params.category;
-  console.log(result);
   return (
     <div>
       <header
@@ -248,7 +288,11 @@ function App() {
             <div className="md:col-span-3 px-3">
               <div id="mapa-santa-fe" className="w-full">
                 {!loading && (
-                  <FullMap list={featuresList} location={location}></FullMap>
+                  <FullMap
+                    list={featuresList}
+                    location={location}
+                    callback={handleFeature}
+                  ></FullMap>
                 )}
               </div>
               {result && result.length > 0 && (
@@ -257,37 +301,16 @@ function App() {
                     Resultados
                   </h2>
                   <div className="space-y-3">
-                    {result.map(item => (
-                      <div class="shadow-lg bg-white rounded-xl p-5 space-y-3">
-                        <header>
-                          <h2 class="text-green-500 text-xl font-bold">
-                            {item.name}
-                          </h2>
-                          <h3 className="text-base text-gray-500">
-                            {item.category} | {item.subcategory}
-                          </h3>
-                        </header>
-                        <div class="text-sm text-gray-800">
-                          <p>{item.description}</p>
+                    {result.map(item => {
+                      return (
+                        <div
+                          className="shadow-lg bg-white rounded-xl p-5 space-y-3"
+                          key={`result_${item.id}`}
+                        >
+                          <ShowItem item={item} />
                         </div>
-                        <div>
-                          <h4 className="text-sm  text-green-500 font-bold ">
-                            Direccion
-                          </h4>
-                          <div class="text-sm text-gray-800">
-                            {[item.address, item.city].join(", ")}
-                            {(item.email || item.phone) && (
-                              <div>
-                                <h4 className="text-sm  text-green-500 font-bold ">
-                                  Contacto
-                                </h4>{" "}
-                                <p>{[item.phone, item.email].join(" | ")}</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -295,6 +318,30 @@ function App() {
           </div>
         </div>
       </main>
+      <div
+        class={`flex fixed justify-center top-0 bottom-0 left-0 right-0 items-center	bg-green-200 bg-opacity-50 ${
+          !showModal && `hidden`
+        }`}
+      >
+        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full">
+          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="sm:flex sm:items-start">
+              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <ShowItem item={selectedFeature} />
+              </div>
+            </div>
+          </div>
+          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button
+              type="button"
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              onClick={() => setShowModal(false)}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
 
       <footer
         className=" bg-white py-16 border-t-4"

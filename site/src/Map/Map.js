@@ -3,7 +3,7 @@ import "./Map.css";
 import MapContext from "./MapContext";
 import * as ol from "ol";
 
-const Map = ({ children, zoom, center }) => {
+const Map = ({ children, zoom, center, callback }) => {
   const mapRef = useRef();
   const [map, setMap] = useState(null);
 
@@ -19,7 +19,16 @@ const Map = ({ children, zoom, center }) => {
     let mapObject = new ol.Map(options);
     mapObject.setTarget(mapRef.current);
     setMap(mapObject);
+    mapObject.on("click", ev => {
+      const features = mapObject.getFeaturesAtPixel(ev.pixel);
 
+      if (features.length === 0) {
+        return false;
+      } else {
+        console.log("triggering click");
+        callback && callback(features);
+      }
+    });
     return () => mapObject.setTarget(undefined);
   }, []);
 
@@ -35,7 +44,6 @@ const Map = ({ children, zoom, center }) => {
     if (!map) return;
     map.getView().setCenter(center);
   }, [center]);
-
   return (
     <MapContext.Provider value={{ map }}>
       <div ref={mapRef} className="ol-map">
