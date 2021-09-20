@@ -11,7 +11,6 @@ const PointsPage = () => {
   const [fileContent, setFileContent] = useState(null);
   let history = useHistory();
   const handleForce = (data, fileInfo) => {
-    console.log("data", data, fileInfo);
     setFileContent(data);
   };
 
@@ -19,14 +18,24 @@ const PointsPage = () => {
     header: true,
     dynamicTyping: true,
     skipEmptyLines: true,
-    transformHeader: (header) => header.toLowerCase().replace(/\W/g, "_"),
+    transformHeader: header => header.toLowerCase().replace(/\W/g, "_"),
   };
   const handleImport = () => {
     axios
-      .post(`https://defensoria-sf.web.app/api/v1/points`, {
-        content: fileContent,
-      })
-      .then((res) => {
+      .post(
+        `https://defensoria-sf.web.app/api/v1/points`,
+        {
+          content: fileContent,
+        }
+        // {
+        //   headers: {
+        //     "Access-Control-Allow-Origin": "*",
+        //     "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+        //     referrerPolicy: "no-referrer-when-downgrade",
+        //   },
+        // }
+      )
+      .then(res => {
         history.replace(`/points`);
       });
   };
@@ -83,7 +92,7 @@ const PointsPage = () => {
                         className="text-gray-700 dark:text-gray-400"
                         key={`tr-${index}`}
                       >
-                        {Object.keys(fileContent[0]).map((key) => {
+                        {Object.keys(fileContent[0]).map(key => {
                           return (
                             <td className="px-4 py-3 text-sm truncate max-w-sm	">
                               {row[key]}

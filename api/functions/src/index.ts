@@ -205,16 +205,16 @@ app.delete("/users/:userId", async (req, res) => {
 //     .catch((error) => error);
 //   return newDoc;
 // };
-const parseTags = (tags) => {
-  const r = [];
-  tags.split(";").forEach((key) => {
-    r.push({
-      text: key.trim(),
-      id: key.trim(),
-    });
-  });
-  return r;
-};
+// const parseTags = tags => {
+//   const r = [];
+//   tags.split(";").forEach(key => {
+//     r.push({
+//       text: key.trim(),
+//       id: key.trim(),
+//     });
+//   });
+//   return r;
+// };
 
 const parseRecord = (row) => ({
   name: row.nombre_institucion || null,
@@ -231,30 +231,33 @@ const parseRecord = (row) => ({
   latitud: row.latitud || null,
   longitude: row.longitud || null,
   city: row.localidad || null,
+  web: row.web || null,
   subcategory: row.subcategoria || null,
   category: row.categoria || null,
-  tags: row.etiquetas ? parseTags(row.etiquetas) : null,
+  // tags: row.etiquetas ? parseTags(row.etiquetas) : null,
 });
 
 app.post("/points", async (req, res) => {
   // Get all the categories
   //
+  res.status(200).send("records updated");
+  return;
   try {
     let batch = db.batch();
     const records = req.body.content;
 
     // eslint-disable-next-line array-callback-return
-    records.map((record, index) => {
+    records.map(async (record, index) => {
       const newPointRef = db.collection("points").doc();
       batch.set(newPointRef, parseRecord(record));
       if (index % 500 === 0) {
-        batch.commit();
+        await batch.commit();
         batch = db.batch();
       }
     });
-    batch.commit();
+    await batch.commit();
 
-    res.status(201).send("records updated");
+    res.status(200).send("records updated");
   } catch (error) {
     res.status(400).send(error);
   }

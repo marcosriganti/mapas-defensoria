@@ -2,6 +2,11 @@ import Autocomplete from "react-autocomplete";
 import cities from "../assets/cities.json";
 
 export const TypeCities = ({ field, handleChange, values }) => {
+  const cityName = name => {
+    let newName = name.split("-");
+
+    return newName[0] + " - Depto. " + newName[1];
+  };
   return (
     <label className="block text-sm my-2">
       <span className="text-gray-700 font-medium">{field.label}</span>
@@ -19,10 +24,16 @@ export const TypeCities = ({ field, handleChange, values }) => {
           }
           renderItem={(item, isHighlighted) => (
             <div
+              key={`${field.name}-${item.district_id}-${item.full_name.replace(
+                /\s+/g,
+                ""
+              )}`}
               style={{ background: isHighlighted ? "lightgray" : "white" }}
               className="w-full p-2"
             >
-              {item.full_name}
+              {field.name === "city"
+                ? cityName(item.full_name)
+                : item.full_name}
             </div>
           )}
           value={values[field.name] ? values[field.name] : ""}

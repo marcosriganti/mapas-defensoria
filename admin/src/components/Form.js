@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Autocomplete from "react-autocomplete";
 import { WithContext as ReactTags } from "react-tag-input";
+import { SwatchesPicker } from "react-color";
 
 import cities from "../data/cities.json";
 
@@ -12,11 +13,34 @@ const TypeNumber = ({ field, handleChange, values }) => {
       <input
         name={field.name}
         type="number"
-        onChange={(ev) => handleChange(field.name, ev.target.value)}
+        onChange={ev => handleChange(field.name, ev.target.value)}
         className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
         placeholder=""
         value={values[field.name] ? values[field.name] : ""}
       />
+    </label>
+  );
+};
+const TypeColor = ({ field, handleChange, values }) => {
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+      <SwatchesPicker
+        color={values[field.name] ? values[field.name] : ""}
+        onChange={(color, event) => {
+          handleChange(field.name, color.hex);
+        }}
+        name={field.name}
+      />
+      {/* <input
+        name={field.name}
+        onChange={ev => handleChange(field.name, ev.target.value)}
+        className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+        placeholder=""
+        type="text"
+        minLength={field.min || 0}
+        value={values[field.name] ? values[field.name] : ""}
+      /> */}
     </label>
   );
 };
@@ -27,7 +51,7 @@ const TypeText = ({ field, handleChange, values }) => {
 
       <input
         name={field.name}
-        onChange={(ev) => handleChange(field.name, ev.target.value)}
+        onChange={ev => handleChange(field.name, ev.target.value)}
         className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
         placeholder=""
         type="text"
@@ -46,7 +70,7 @@ const TypeTextarea = ({ field, handleChange, values }) => {
         className="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
         rows="5"
         name={field.name}
-        onChange={(ev) => handleChange(field.name, ev.target.value)}
+        onChange={ev => handleChange(field.name, ev.target.value)}
       >
         {values[field.name] ? values[field.name] : ""}
       </textarea>
@@ -60,7 +84,7 @@ const TypeSelect = ({ field, handleChange, values }) => {
 
       <select
         name={field.name}
-        onChange={(ev) => handleChange(field.name, ev.target.value)}
+        onChange={ev => handleChange(field.name, ev.target.value)}
         className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
         placeholder=""
         type="text"
@@ -78,7 +102,7 @@ const TypeCities = ({ field, handleChange, values }) => {
       <div className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input">
         <Autocomplete
           className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-          getItemValue={(item) => item.full_name}
+          getItemValue={item => item.full_name}
           wrapperStyle={{ width: "100%" }}
           items={cities}
           shouldItemRender={(item, value) =>
@@ -93,8 +117,8 @@ const TypeCities = ({ field, handleChange, values }) => {
             </div>
           )}
           value={values[field.name] ? values[field.name] : ""}
-          onChange={(ev) => handleChange(field.name, ev.target.value)}
-          onSelect={(val) => handleChange(field.name, val)}
+          onChange={ev => handleChange(field.name, ev.target.value)}
+          onSelect={val => handleChange(field.name, val)}
         />
       </div>
     </label>
@@ -107,12 +131,12 @@ const TypeTags = ({ field, handleChange, values }) => {
   };
 
   const delimiters = [KeyCodes.comma, KeyCodes.enter];
-  const handleAddition = (tag) => {
+  const handleAddition = tag => {
     const base = values[field.name] ? values[field.name] : [];
     const newValue = [...base, tag];
     handleChange(field.name, newValue);
   };
-  const handleDelete = (i) => {
+  const handleDelete = i => {
     const base = values[field.name] ? values[field.name] : [];
     handleChange(
       field.name,
@@ -140,7 +164,7 @@ const TypeTags = ({ field, handleChange, values }) => {
 };
 
 const TypeImage = ({ field, handleChange, values }) => {
-  const onSelectFile = (e) => {
+  const onSelectFile = e => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.addEventListener("load", () =>
@@ -185,6 +209,7 @@ const types = {
   customCities: TypeCities,
   tag: TypeTags,
   image: TypeImage,
+  color: TypeColor,
 };
 
 const Form = ({ fields, onSubmit, initialValues }) => {
@@ -197,7 +222,7 @@ const Form = ({ fields, onSubmit, initialValues }) => {
   };
   return (
     <div>
-      {fields.map((field) => {
+      {fields.map(field => {
         const Element = types[field.type];
         return (
           Element &&
@@ -217,7 +242,7 @@ const Form = ({ fields, onSubmit, initialValues }) => {
       <hr className="my-4" />
       <button
         className="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-        onClick={(ev) => {
+        onClick={ev => {
           ev.preventDefault();
           onSubmit(values);
         }}

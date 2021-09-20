@@ -7,7 +7,7 @@ import { table } from "../../data/points";
 
 const PointsPage = () => {
   const [reload, setReload] = useState(null);
-  const onDelete = async (uid) => {
+  const onDelete = async uid => {
     if (window.confirm("Seguro quiere eliminar la institucion?")) {
       await firebase_app
         .firestore()
@@ -40,7 +40,7 @@ const PointsPage = () => {
           </div>
         </div>
         <div
-          class="block text-sm text-left text-gray-600 bg-gray-200 border border-gray-400 h-12 flex items-center p-4 rounded-sm my-4"
+          className="block text-sm text-left text-gray-600 bg-gray-200 border border-gray-400 h-12 flex items-center p-4 rounded-sm my-4"
           role="alert"
         >
           Registros importados pueden demorar entre 5-15 minutos estar
