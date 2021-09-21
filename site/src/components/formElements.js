@@ -4,7 +4,6 @@ import cities from "../assets/cities.json";
 export const TypeCities = ({ field, handleChange, values }) => {
   const cityName = name => {
     let newName = name.split("-");
-
     return newName[0] + " - Depto. " + newName[1];
   };
   return (
@@ -19,9 +18,11 @@ export const TypeCities = ({ field, handleChange, values }) => {
           getItemValue={item => item.full_name}
           wrapperStyle={{ width: "100%" }}
           items={cities}
-          shouldItemRender={(item, value) =>
-            item.full_name.toLowerCase().indexOf(value.toLowerCase()) > -1
-          }
+          shouldItemRender={(item, value) => {
+            const q = value.toLowerCase();
+            const base = item.full_name.toLowerCase().split("-")[0];
+            return base.indexOf(q) > -1;
+          }}
           selectOnBlur
           renderItem={(item, isHighlighted) => (
             <div
@@ -32,9 +33,7 @@ export const TypeCities = ({ field, handleChange, values }) => {
               style={{ background: isHighlighted ? "lightgray" : "white" }}
               className="w-full p-2"
             >
-              {field.name === "city"
-                ? cityName(item.full_name)
-                : item.full_name}
+              {cityName(item.full_name)}
             </div>
           )}
           value={values[field.name] ? values[field.name] : ""}
