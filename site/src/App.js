@@ -209,7 +209,7 @@ function App() {
     });
     return false;
   };
-  const validForm = params.city && params.category;
+  const validForm = params.city || params.category;
   return (
     <div>
       <Header />
@@ -256,6 +256,25 @@ function App() {
                 >
                   {seaching ? "Buscando..." : "Buscar"}
                 </button>
+
+                <button
+                  type="button"
+                  onClick={ev => {
+                    ev.preventDefault();
+                    setParams({});
+                    setSubcategories([]);
+                  }}
+                  className={`px-4 mt-2 py-2  font-semibold text-center text-white   block w-full rounded-md 
+                     ${
+                       Object.keys(params).length > 0
+                         ? `bg-red-500 hover:bg-red-400`
+                         : `bg-gray-400`
+                     }
+                  `}
+                >
+                  Borrar Filtros
+                </button>
+
                 {result !== null && (
                   <p className="text-gray-800 text-sm mt-2 text-center">{`Se ha/n encontrado ${result.length} resultado/s`}</p>
                 )}

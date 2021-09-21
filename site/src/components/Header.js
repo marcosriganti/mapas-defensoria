@@ -15,12 +15,12 @@ const Header = () => (
     </div>
     <div className="container mx-auto">
       <div className="flex flex-col md:flex-row items-center justify-between space-y-4 px-3 md:p-0">
-        <div>
+        <a href="https://www.defensorianna.gob.ar/">
           <img
             src={logo}
             alt="Defensor&iacute;a de ni&ntilde;as, ni&ntilde;os y adolescentes"
           />
-        </div>
+        </a>
         <div>
           <h1 className="text-2xl">
             Georreferencia del Sistema de Protección de NNYA

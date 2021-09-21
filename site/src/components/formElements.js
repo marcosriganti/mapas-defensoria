@@ -22,6 +22,7 @@ export const TypeCities = ({ field, handleChange, values }) => {
           shouldItemRender={(item, value) =>
             item.full_name.toLowerCase().indexOf(value.toLowerCase()) > -1
           }
+          selectOnBlur
           renderItem={(item, isHighlighted) => (
             <div
               key={`${field.name}-${item.district_id}-${item.full_name.replace(
@@ -60,6 +61,7 @@ export const TypeCategories = ({ field, handleChange, values, source }) => {
             disabled: source.length === 0,
             autoComplete: false,
           }}
+          selectOnBlur
           getItemValue={item => item.name || item.text}
           wrapperStyle={{ width: "100%" }}
           items={source}
