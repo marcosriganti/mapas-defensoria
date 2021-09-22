@@ -3,12 +3,14 @@ import * as admin from "firebase-admin";
 import * as express from "express";
 import { backup } from "firestore-export-import";
 import * as bodyParser from "body-parser";
+import { BigBatch } from "@qualdesk/firestore-big-batch";
 
 const cors = require("cors");
 
 admin.initializeApp(functions.config().firebase);
 
 const db = admin.firestore();
+const batch = new BigBatch({ firestore: db }); //
 const auth = admin.auth();
 const app = express();
 const main = express();
@@ -33,12 +35,24 @@ interface User {
   password: string;
   email: string;
 }
+const firestoreAutoId = (): string => {
+  const CHARS =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  let autoId = "";
+
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < 20; i++) {
+    autoId += CHARS.charAt(Math.floor(Math.random() * CHARS.length));
+  }
+  return autoId;
+};
 
 const getDocument = (collectionName: string, documentId: string) => {
   const docRef = db.collection(collectionName).doc(documentId);
   return docRef
     .get()
-    .then((doc) => {
+    .then(doc => {
       if (doc.exists) {
         return doc.data();
       }
@@ -46,7 +60,7 @@ const getDocument = (collectionName: string, documentId: string) => {
       console.log("No such document!");
       return false;
     })
-    .catch((error) => {
+    .catch(error => {
       console.log("Error getting document:", error);
     });
 };
@@ -65,8 +79,8 @@ app.post("/contacts", async (req, res) => {
     const newDoc = await db
       .collection(contactsCollection)
       .add(contact)
-      .then((docRef) => docRef)
-      .catch((error) => error);
+      .then(docRef => docRef)
+      .catch(error => error);
 
     res.status(201).send(`Created a new contact: ${newDoc.id}`);
   } catch (error) {
@@ -82,21 +96,21 @@ app.patch("/contacts/:contactId", async (req, res) => {
     .doc(req.params.contactId)
     .update(req.body)
     .then(() => true)
-    .catch((err) => err);
+    .catch(err => err);
 
   res.status(204).send(`Update a new contact: ${updatedDoc}`);
 });
 // View a contact
 app.get("/contacts/:contactId", (req, res) => {
   getDocument(contactsCollection, req.params.contactId)
-    .then((doc) => res.status(200).send(doc))
-    .catch((error) => res.status(400).send(`Cannot get contact: ${error}`));
+    .then(doc => res.status(200).send(doc))
+    .catch(error => res.status(400).send(`Cannot get contact: ${error}`));
 });
 // View all contacts
 app.get("/contacts", (req, res) => {
   backup(contactsCollection)
-    .then((data) => res.status(200).send(data))
-    .catch((error) => res.status(400).send(`Cannot get contacts: ${error}`));
+    .then(data => res.status(200).send(data))
+    .catch(error => res.status(400).send(`Cannot get contacts: ${error}`));
 });
 // Delete a contact
 app.delete("/contacts/:contactId", async (req, res) => {
@@ -108,7 +122,7 @@ app.delete("/contacts/:contactId", async (req, res) => {
       status: true,
       message: `${req.params.contactId} successfully deleted!`,
     }))
-    .catch((error) => ({ status: false, message: error }));
+    .catch(error => ({ status: false, message: error }));
 
   res.status(204).send(`Contact is deleted: ${deletedContact}`);
 });
@@ -119,21 +133,21 @@ app.delete("/contacts/:contactId", async (req, res) => {
 // View all contacts
 app.get("/categories", (req, res) => {
   backup("categories")
-    .then((data) => res.status(200).send(data))
-    .catch((error) => res.status(400).send(`Cannot get contacts: ${error}`));
+    .then(data => res.status(200).send(data))
+    .catch(error => res.status(400).send(`Cannot get contacts: ${error}`));
 });
 
 app.get("/users", (req, res) => {
   auth
     .listUsers(1000)
-    .then((listUsersResult) => {
+    .then(listUsersResult => {
       const data = [];
-      listUsersResult.users.forEach((userRecord) => {
+      listUsersResult.users.forEach(userRecord => {
         data.push(userRecord);
       });
       return res.status(200).send(data);
     })
-    .catch((error) => {
+    .catch(error => {
       console.log("Error listing users:", error);
     });
 });
@@ -151,13 +165,13 @@ app.post("/users", async (req, res) => {
   };
   auth
     .createUser(userInfo)
-    .then((userRecord) => {
+    .then(userRecord => {
       res.status(201).send(
         // eslint-disable-next-line comma-dangle
         `Usuario Creado: ${userRecord.uid}`
       );
     })
-    .catch((error) => {
+    .catch(error => {
       res.status(400).send(`Error: ${error}`);
     });
   // }
@@ -166,8 +180,8 @@ app.post("/users", async (req, res) => {
 app.get("/users/:userId", (req, res) => {
   auth
     .getUser(req.params.userId)
-    .then((userRecord) => res.status(200).send(userRecord))
-    .catch((error) => res.status(400).send(`Cannot get userRecord: ${error}`));
+    .then(userRecord => res.status(200).send(userRecord))
+    .catch(error => res.status(400).send(`Cannot get userRecord: ${error}`));
 });
 
 app.patch("/users/:userId", async (req, res) => {
@@ -177,10 +191,10 @@ app.patch("/users/:userId", async (req, res) => {
   };
   auth
     .updateUser(req.params.userId, user)
-    .then((userRecord) => {
+    .then(userRecord => {
       res.status(204).send(`Update a User : ${userRecord.uid}`);
     })
-    .catch((error) => {
+    .catch(error => {
       res.status(400).send(`Error: ${error}`);
     });
 });
@@ -191,7 +205,7 @@ app.delete("/users/:userId", async (req, res) => {
     .then(() => {
       res.status(204).send(`User is deleted: ${req.params.userId}`);
     })
-    .catch((error) => {
+    .catch(error => {
       res.status(400).send(`Error: ${error}`);
     });
 });
@@ -216,7 +230,7 @@ app.delete("/users/:userId", async (req, res) => {
 //   return r;
 // };
 
-const parseRecord = (row) => ({
+const parseRecord = row => ({
   name: row.nombre_institucion || null,
   description: row.descripcion || null,
   extended_description: row.informacion_detallada || null,
@@ -237,28 +251,38 @@ const parseRecord = (row) => ({
   // tags: row.etiquetas ? parseTags(row.etiquetas) : null,
 });
 
+// const commitMultiple = (batchFactories) => {
+//   let result = Promise.resolve();
+//   /** Waiting 1.2 seconds between writes */
+//   const TIMEOUT = 1200;
+
+//   batchFactories.forEach((promiseFactory, index) => {
+//     result = result
+//       .then(() => {
+//         return new Promise((resolve) => {
+//           setTimeout(resolve, TIMEOUT);
+//         });
+//       })
+//       .then(promiseFactory)
+//       .then(() =>
+//         console.log(`Commited ${index + 1} of ${batchFactories.length}`)
+//       );
+//   });
+
+//   return result;
+// };
+
 app.post("/points", async (req, res) => {
-  // Get all the categories
-  //
-  res.status(200).send("records updated");
-  return;
-  try {
-    let batch = db.batch();
-    const records = req.body.content;
-
-    // eslint-disable-next-line array-callback-return
-    records.map(async (record, index) => {
-      const newPointRef = db.collection("points").doc();
-      batch.set(newPointRef, parseRecord(record));
-      if (index % 500 === 0) {
-        await batch.commit();
-        batch = db.batch();
-      }
-    });
-    await batch.commit();
-
-    res.status(200).send("records updated");
-  } catch (error) {
-    res.status(400).send(error);
+  const records = req.body.content;
+  if (records && records.length === 0) {
+    res.status(200).send("No records to import ");
   }
+  // eslint-disable-next-line array-callback-return
+  records.map(record => {
+    const id = firestoreAutoId();
+    const ref = db.collection("points").doc(id);
+    batch.set(ref, parseRecord(record), { merge: true });
+  });
+  await batch.commit();
+  res.status(200).send("records updated");
 });

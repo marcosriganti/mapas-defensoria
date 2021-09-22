@@ -12,18 +12,16 @@ const PointsEditPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`https://defensoria-sf.web.app/api/v1/users/${id}`)
-      .then((res) => {
-        setData(res.data);
-        setLoading(false);
-      });
+    axios.get(`https://defensoria-sf.web.app/api/v1/users/${id}`).then(res => {
+      setData(res.data);
+      setLoading(false);
+    });
   }, [id]);
 
-  const onSubmit = async (values) => {
+  const onSubmit = async values => {
     axios
       .patch(`https://defensoria-sf.web.app/api/v1/users/${id}`, { ...values })
-      .then((res) => {
+      .then(res => {
         history.replace(`/${table.collection}`);
       });
   };
@@ -63,7 +61,7 @@ const PointsEditPage = () => {
                   cy="12"
                   r="10"
                   stroke="currentColor"
-                  stroke-width="4"
+                  strokeWidth="4"
                 ></circle>
                 <path
                   className="opacity-75"

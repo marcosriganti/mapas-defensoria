@@ -16,13 +16,13 @@ const CategoriesEditPage = () => {
       .collection(table.collection)
       .doc(id)
       .get()
-      .then((doc) => {
+      .then(doc => {
         // doc.data() is never undefined for query doc snapshots
         setLoading(false);
         setData(doc.data());
       });
   }, [id]);
-  const onSubmit = async (values) => {
+  const onSubmit = async values => {
     const newRef = firebase_app
       .firestore()
       .collection(table.collection)
@@ -66,7 +66,7 @@ const CategoriesEditPage = () => {
                   cy="12"
                   r="10"
                   stroke="currentColor"
-                  stroke-width="4"
+                  strokeWidth="4"
                 ></circle>
                 <path
                   className="opacity-75"

@@ -223,7 +223,7 @@ function App() {
                 </h3>
                 <TypeCities
                   values={params}
-                  field={{ name: "city", label: "Ciudad - Departamento" }}
+                  field={{ name: "city", label: "Ciudad - Departamento *" }}
                   handleChange={handleChange}
                 />
                 <h3 className="px-3 py-2 mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
@@ -231,7 +231,7 @@ function App() {
                 </h3>
                 <TypeCategories
                   values={params}
-                  field={{ name: "category", label: "Principal" }}
+                  field={{ name: "category", label: "Principal *" }}
                   source={categories}
                   handleChange={handleChange}
                 />
