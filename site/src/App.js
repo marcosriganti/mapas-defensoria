@@ -36,7 +36,7 @@ function addMarkers(lonLatArray) {
   });
   return features;
 }
-const ShowItem = ({ item }) => {
+const ShowItem = ({ item, onList }) => {
   return (
     <>
       <header>
@@ -45,9 +45,19 @@ const ShowItem = ({ item }) => {
           {item.category} | {item.subcategory}
         </h3>
       </header>
-      <div className="text-sm text-gray-800 overflow-auto h-48 pb-2">
-        <p>{item.description}</p>
-      </div>
+      {onList ? (
+        <div className="text-sm text-gray-800 overflow-auto h-48 pb-2">
+          <button className="">Ver Mas</button>
+          {/* <p>{item.description}</p>
+        <p>{item.extended_description}</p> */}
+        </div>
+      ) : (
+        <div className="text-sm text-gray-800 overflow-auto h-48 pb-2">
+          <p>{item.description}</p>
+          <p>{item.extended_description}</p>
+        </div>
+      )}
+
       <div>
         <h4 className="text-sm  text-green-500 font-bold ">Direccion</h4>
         <div className="text-sm text-gray-800">
@@ -55,7 +65,22 @@ const ShowItem = ({ item }) => {
           {(item.email || item.phone) && (
             <div>
               <h4 className="text-sm  text-green-500 font-bold ">Contacto</h4>{" "}
-              <p>{[item.phone, item.email].join(" | ")}</p>
+              <p>
+                {item.phone}
+                {item.email &&
+                  item.email.split(";").map(el => (
+                    <>
+                      &nbsp; | &nbsp;
+                      <a
+                        href={`mailto:${el.trim()}`}
+                        className="text-sm  text-green-500"
+                      >
+                        {el.trim()}
+                      </a>
+                    </>
+                  ))}
+              </p>
+              <p>Redes Sociales</p>
             </div>
           )}
         </div>
@@ -173,11 +198,14 @@ function App() {
     let list = [];
     if (!params.city || !params.category) return false;
 
-    const query = firebase_app
-      .firestore()
-      .collection("points")
-      .where("city", "==", params.city)
-      .where("category", "==", params.category);
+    const query = firebase_app.firestore().collection("points");
+    if (params.city) {
+      query.where("city", "==", params.city);
+    }
+    if (params.category) {
+      query.where("category", "==", params.category);
+    }
+
     if (params.subcategory) {
       query.where("subcategory", "==", params.subcategory);
     }
@@ -223,7 +251,7 @@ function App() {
                 </h3>
                 <TypeCities
                   values={params}
-                  field={{ name: "city", label: "Ciudad - Departamento *" }}
+                  field={{ name: "city", label: "Ciudad - Departamento" }}
                   handleChange={handleChange}
                 />
                 <h3 className="px-3 py-2 mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
@@ -231,7 +259,7 @@ function App() {
                 </h3>
                 <TypeCategories
                   values={params}
-                  field={{ name: "category", label: "Principal *" }}
+                  field={{ name: "category", label: "Principal" }}
                   source={categories}
                   handleChange={handleChange}
                 />
