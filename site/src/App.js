@@ -45,6 +45,7 @@ function addMarkers(lonLatArray) {
   return features;
 }
 const ShowItem = ({ item, onList }) => {
+  const [showDescription, setShowDescription] = useState(onList ? false : true);
   return (
     <>
       <header>
@@ -55,11 +56,22 @@ const ShowItem = ({ item, onList }) => {
       </header>
       {onList ? (
         <div className="text-sm text-gray-800 overflow-auto  pb-2">
-          <button className="bg-green-400 hover:bg-green-300 px-4 py-2  font-semibold text-center text-white   inline  rounded-md">
-            Ver Mas
+          {showDescription ? (
+            <div className="mb-2 inline-block">
+              <p>{item.description}</p>
+              <p>{item.extended_description}</p>
+            </div>
+          ) : (
+            <div className="mb-2 inline-block">
+              <p>{item.description.substr(0, 140)}...</p>
+            </div>
+          )}
+          <button
+            className="  font-semibold text-center text-green-400   inline   text-sm"
+            onClick={() => setShowDescription(!showDescription)}
+          >
+            {!showDescription ? `Ver Mas` : `Ver Menos`}
           </button>
-          {/* <p>{item.description}</p>
-        <p>{item.extended_description}</p> */}
         </div>
       ) : (
         <div className="text-sm text-gray-800 overflow-auto h-48 pb-2">
