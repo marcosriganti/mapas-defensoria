@@ -56,7 +56,7 @@ export const table = {
       onTable: true,
     },
     {
-      name: "website",
+      name: "web",
       label: "Web",
       type: "text",
     },

@@ -6,7 +6,7 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import axios from "axios";
 import { osm, vector } from "./Source";
-import { fromLonLat, get } from "ol/proj";
+import { fromLonLat } from "ol/proj";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { Controls, FullScreenControl } from "./Controls";
@@ -17,6 +17,14 @@ import cities from "./assets/cities.json";
 
 import { setWithExpiry, getWithExpiry } from "./utils/localStorage";
 import { TypeCategories, TypeCities } from "./components/formElements";
+
+// Icons
+
+import facebook from "./assets/facebook.svg";
+import twitter from "./assets/twitter.svg";
+import instagram from "./assets/instagram.svg";
+import youtube from "./assets/youtube.svg";
+import website from "./assets/website.svg";
 
 function addMarkers(lonLatArray) {
   var iconStyle = new Style({
@@ -46,8 +54,10 @@ const ShowItem = ({ item, onList }) => {
         </h3>
       </header>
       {onList ? (
-        <div className="text-sm text-gray-800 overflow-auto h-48 pb-2">
-          <button className="">Ver Mas</button>
+        <div className="text-sm text-gray-800 overflow-auto  pb-2">
+          <button className="bg-green-400 hover:bg-green-300 px-4 py-2  font-semibold text-center text-white   inline  rounded-md">
+            Ver Mas
+          </button>
           {/* <p>{item.description}</p>
         <p>{item.extended_description}</p> */}
         </div>
@@ -64,7 +74,9 @@ const ShowItem = ({ item, onList }) => {
           {[item.address, item.city].join(", ")}
           {(item.email || item.phone) && (
             <div>
-              <h4 className="text-sm  text-green-500 font-bold ">Contacto</h4>{" "}
+              <h4 className="text-sm  text-green-500 font-bold my-1">
+                Contacto
+              </h4>{" "}
               <p>
                 {item.phone}
                 {item.email &&
@@ -80,7 +92,90 @@ const ShowItem = ({ item, onList }) => {
                     </>
                   ))}
               </p>
-              <p>Redes Sociales</p>
+              {(item.facebook ||
+                item.instagram ||
+                item.twitter ||
+                item.web ||
+                item.youtube) && (
+                <div>
+                  <h4 className="text-sm  text-green-500 font-bold my-1">
+                    Redes Sociales
+                  </h4>
+                  <p>
+                    {item.web && (
+                      <a
+                        href={item.web}
+                        className="flex space-x-1 items-center"
+                      >
+                        <img
+                          src={website}
+                          className="w-4 inline text-green-500"
+                        />
+                        <span className="inline text-green-500">
+                          {item.web}
+                        </span>
+                      </a>
+                    )}
+
+                    {item.facebook && (
+                      <a
+                        href={item.facebook}
+                        className="flex space-x-1 items-center"
+                      >
+                        <img
+                          src={facebook}
+                          className="w-4 inline text-green-500"
+                        />
+                        <span className="inline text-green-500">
+                          {item.facebook}
+                        </span>
+                      </a>
+                    )}
+                    {item.instagram && (
+                      <a
+                        href={item.instagram}
+                        className="flex space-x-1 items-center"
+                      >
+                        <img
+                          src={instagram}
+                          className="w-4 inline text-green-500"
+                        />
+                        <span className="inline text-green-500">
+                          {item.instagram}
+                        </span>
+                      </a>
+                    )}
+                    {item.youtube && (
+                      <a
+                        href={item.youtube}
+                        className="flex space-x-1 items-center"
+                      >
+                        <img
+                          src={youtube}
+                          className="w-4 inline text-green-500"
+                        />
+                        <span className="inline text-green-500">
+                          {item.youtube}
+                        </span>
+                      </a>
+                    )}
+                    {item.twitter && (
+                      <a
+                        href={item.twitter}
+                        className="flex space-x-1 items-center"
+                      >
+                        <img
+                          src={twitter}
+                          className="w-4 inline text-green-500"
+                        />
+                        <span className="inline text-green-500">
+                          {item.twitter}
+                        </span>
+                      </a>
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -329,9 +424,10 @@ function App() {
                       return (
                         <div
                           className="shadow-lg bg-white rounded-xl p-5 space-y-3"
+                          id={`result_${item.id}`}
                           key={`result_${item.id}`}
                         >
-                          <ShowItem item={item} />
+                          <ShowItem item={item} onList />
                         </div>
                       );
                     })}
