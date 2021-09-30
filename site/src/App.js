@@ -26,15 +26,54 @@ import instagram from "./assets/instagram.svg";
 import youtube from "./assets/youtube.svg";
 import website from "./assets/website.svg";
 
+const getCategories = async () => {
+  let cats = getWithExpiry("categories");
+  if (!cats) {
+    const res = await axios.get(
+      `https://defensoria-sf.web.app/api/v1/categories`
+    );
+    setWithExpiry("categories", res.data);
+    cats = res.data;
+  }
+  return cats;
+};
+
+const hexToRgb = hex => {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `rgb(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
+        result[3],
+        16
+      )} )`
+    : null;
+};
+const getColorFromCategory = name => {
+  let cats = getWithExpiry("categories");
+  const category = Object.values(cats.categories).find(
+    cat => cat.name === name
+  );
+  return hexToRgb(category && (category.color || "#000000"));
+};
+const getImageFromCategory = name => {
+  const color = getColorFromCategory(name);
+  let svg =
+    '<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="25" height="25">';
+  svg += `<path  fill="${color}"  d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z" />`;
+
+  svg += "</svg>";
+  return svg;
+};
+
 function addMarkers(lonLatArray) {
-  var iconStyle = new Style({
-    image: new Icon({
-      anchorXUnits: "fraction",
-      anchorYUnits: "pixels",
-      src: mapConfig.markerImage32,
-    }),
-  });
   let features = lonLatArray.map((item, index) => {
+    var iconStyle = new Style({
+      image: new Icon({
+        anchorXUnits: "fraction",
+        anchorYUnits: "pixels",
+        src: "data:image/svg+xml;utf8," + getImageFromCategory(item.category),
+      }),
+    });
+
     let feature = new Feature({
       id: item.id,
       geometry: new Point(fromLonLat(item.lonLat)),
@@ -51,7 +90,13 @@ const ShowItem = ({ item, onList }) => {
       <header>
         <h2 className="text-green-500 text-xl font-bold">{item.name}</h2>
         <h3 className="text-base text-gray-500">
-          {item.category} | {item.subcategory}
+          <span
+            style={{ color: getColorFromCategory(item.category) }}
+            className="font-bold"
+          >
+            {item.category}
+          </span>{" "}
+          | {item.subcategory}
         </h3>
       </header>
       {onList ? (
@@ -219,17 +264,6 @@ const FullMap = ({ list, location, callback }) => {
   );
 };
 
-const getCategories = async () => {
-  let cats = getWithExpiry("categories");
-  if (!cats) {
-    const res = await axios.get(
-      `https://defensoria-sf.web.app/api/v1/categories`
-    );
-    setWithExpiry("categories", res.data);
-    cats = res.data;
-  }
-  return cats;
-};
 const getSubcategories = async parent => {
   const cats = await getCategories();
   const categories = Object.values(cats.categories);
@@ -254,13 +288,13 @@ function App() {
 
   useEffect(() => {
     if (loading) {
-      console.log("get cats");
       const getCats = async () => {
         const cats = await getCategories();
         setCategories(Object.values(cats.categories));
         setLoading(false);
       };
       getCats();
+
       setLoading(false);
     }
   }, []);
@@ -334,6 +368,7 @@ function App() {
         ) {
           list.push({
             id: item.id,
+            category: item.category,
             lonLat: [
               parseFloat(item.longitude.replace(",", ".")),
               parseFloat(item.latitud.replace(",", ".")),
