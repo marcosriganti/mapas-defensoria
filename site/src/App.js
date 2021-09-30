@@ -196,18 +196,19 @@ function App() {
     ev.preventDefault();
     setSearching(true);
     let list = [];
-    if (!params.city || !params.category) return false;
 
-    const query = firebase_app.firestore().collection("points");
+    if (!params.city && !params.category) return false;
+
+    let query = firebase_app.firestore().collection("points");
     if (params.city) {
-      query.where("city", "==", params.city);
+      query = query.where("city", "==", params.city);
     }
     if (params.category) {
-      query.where("category", "==", params.category);
+      query = query.where("category", "==", params.category);
     }
 
     if (params.subcategory) {
-      query.where("subcategory", "==", params.subcategory);
+      query = query.where("subcategory", "==", params.subcategory);
     }
 
     query.get().then(querySnapshot => {
