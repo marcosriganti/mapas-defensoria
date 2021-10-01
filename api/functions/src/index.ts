@@ -249,6 +249,8 @@ const parseRecord = (row) => ({
   subcategory: row.subcategoria || null,
   category: row.categoria || null,
   tags: row.etiquetas ? parseTags(row.etiquetas) : null,
+  createdAt: admin.firestore.Timestamp.fromDate(new Date()),
+  updatedAt: admin.firestore.Timestamp.fromDate(new Date()),
 });
 
 app.post("/points", async (req, res) => {

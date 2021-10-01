@@ -7,9 +7,13 @@ import { table } from "../../data/points";
 
 const PointsAddPage = () => {
   let history = useHistory();
-  const onSubmit = async (values) => {
+  const onSubmit = async values => {
     const newRef = firebase_app.firestore().collection(table.collection).doc();
-    await newRef.set(values);
+    await newRef.set({
+      ...values,
+      createdAt: firebase_app.firestore.Timestamp.fromDate(new Date()),
+      updatedAt: firebase_app.firestore.Timestamp.fromDate(new Date()),
+    });
     history.replace(`/${table.collection}`);
   };
   return (

@@ -118,30 +118,41 @@ export const Table = ({ table, items, loading, onDelete }) => {
 export const DataTable = ({ table, onDelete }) => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
+  const [last, setLast] = useState(null);
+  const [previous, setPrevious] = useState(null);
+  const limit = 15;
+
+  const getData = async action => {
+    const newArray = [];
+    let query = firebase_app
+      .firestore()
+      .collection(table.collection)
+      .limit(limit);
+    if (last && action === "next") {
+      query = query.startAfter(last);
+    }
+    if (previous && action === "prev") {
+      query = query.endAt(last);
+      // setPrevious(last);
+    }
+    const querySnapshot = await query.get();
+    querySnapshot.forEach(doc => {
+      newArray.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    setItems(newArray);
+    setLast(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    setPrevious(querySnapshot.docs[0]);
+  };
 
   useEffect(() => {
     if (loading) {
-      firebase_app
-        .firestore()
-        .collection(table.collection)
-        .limit(20)
-        .get()
-        .then(querySnapshot => {
-          const newArray = [];
-          querySnapshot.forEach(doc => {
-            newArray.push({
-              id: doc.id,
-              ...doc.data(),
-            });
-          });
-          setItems(newArray);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.log("Error getting document:", error);
-        });
+      getData();
+      setLoading(false);
     }
-  }, [table, loading]);
+  }, [loading]);
   return (
     <>
       <Table
@@ -150,87 +161,59 @@ export const DataTable = ({ table, onDelete }) => {
         items={items}
         onDelete={onDelete}
       />
-      {/* <div className="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-          <span className="flex items-center col-span-3">
-            Showing 21-30 of 100
-          </span>
-          <span className="col-span-2"></span>
-          <span className="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
-            <nav aria-label="Table navigation">
-              <ul className="inline-flex items-center">
-                <li>
-                  <button
-                    className="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
-                    aria-label="Previous"
+      <div className="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+        <span className="flex items-center col-span-3">
+          {/* Showing 21-30 of 100 */}
+        </span>
+        <span className="col-span-2"></span>
+        <span className="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+          <nav aria-label="Table navigation">
+            <ul className="inline-flex items-center">
+              <li>
+                <button
+                  className="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple flex align-center"
+                  aria-label="Previous"
+                  onClick={() => getData("prev")}
+                >
+                  <svg
+                    aria-hidden="true"
+                    className="w-4 h-4 fill-current"
+                    viewBox="0 0 20 20"
                   >
-                    <svg
-                      aria-hidden="true"
-                      className="w-4 h-4 fill-current"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
-                        fillRule="evenodd"
-                      ></path>
-                    </svg>
-                  </button>
-                </li>
-                <li>
-                  <button className="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                    1
-                  </button>
-                </li>
-                <li>
-                  <button className="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                    2
-                  </button>
-                </li>
-                <li>
-                  <button className="px-3 py-1 text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600 rounded-md focus:outline-none focus:shadow-outline-purple">
-                    3
-                  </button>
-                </li>
-                <li>
-                  <button className="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                    4
-                  </button>
-                </li>
-                <li>
-                  <span className="px-3 py-1">...</span>
-                </li>
-                <li>
-                  <button className="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                    8
-                  </button>
-                </li>
-                <li>
-                  <button className="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                    9
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
-                    aria-label="Next"
+                    <path
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                      fillRule="evenodd"
+                    ></path>
+                  </svg>
+                  Anterior
+                </button>
+              </li>
+
+              <li>
+                <button
+                  className="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple flex align-center"
+                  aria-label="Next"
+                  onClick={() => getData("next")}
+                >
+                  Siguiente
+                  <svg
+                    className="w-4 h-4 fill-current"
+                    aria-hidden="true"
+                    viewBox="0 0 20 20"
                   >
-                    <svg
-                      className="w-4 h-4 fill-current"
-                      aria-hidden="true"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd"
-                        fillRule="evenodd"
-                      ></path>
-                    </svg>
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </span>
-        </div> */}
+                    <path
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"
+                      fillRule="evenodd"
+                    ></path>
+                  </svg>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </span>
+      </div>
     </>
   );
 };

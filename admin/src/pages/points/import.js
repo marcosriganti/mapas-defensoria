@@ -3,8 +3,6 @@ import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../components/Layout";
 import CSVReader from "react-csv-reader";
-// import { useDropzone } from "react-dropzone";
-import { firebase_app } from "../../firebase";
 import { table } from "../../data/points";
 
 const PointsPage = () => {
@@ -25,30 +23,6 @@ const PointsPage = () => {
   const handleImport = async () => {
     if (submiting) return false;
     setSubmiting(true);
-    const test = {
-      name: "Defensoría del Pueblo - Sede Rosario",
-      description:
-        "La Defensoría del Pueblo es un organismo descentralizado, unipersonal e independiente. Su principal objetivo consiste en proteger los derechos e intereses de los individuos y de la comunidad frente a los actos, hechos y omisiones de la Administración Pública Provincial y sus agentes. El Defensor del Pueblo ejerce su jurisdicción sobre todo el territorio provincial y tiene competencia para proceder sobre  la Administración pública centralizada (Gobernación, ministerios, secretarías y subsecretarías del Poder Ejecutivo), la Administración pública descentralizada (entes autárquicos como Iapos, Túnel Subfluvial, Lotería de Santa Fe, empresas del Estado y concesionadas) y Sociedades con participación estatal y personas jurídicas en ejercicio de funciones públicas (colegios de profesionales). Actúa no sólo ante la queja presentada por un/a  ciudadano/a o grupo de personas y/o instituciones sino también puede hacerlo de oficio cuando advierte alguna anormalidad, por vía de la Ley 10.000 de Intereses Difusos o, inclusive, a petición de los diputados y senadores. La Defensoría del Pueblo cuenta con oficinas de atención en todos los departamentos del territorio provincial. Las mismas funcionan como mesa de entradas y boca de recepción de reclamos para la posterior intervención del Defensor del Pueblo. ",
-      extended_description: null,
-      address: "Pasaje Alvarez 1516",
-      email: "inforos@defensoriasantafe.gob.ar",
-      instagram: null,
-      facebook: null,
-      linkedin: null,
-      twitter: null,
-      youtube: null,
-      phone: " +54 9 341 4721112/13",
-      latitud: "-32,9447375235831",
-      longitude: "-60,6439204315305",
-      city: "Rosario - Rosario",
-      web: null,
-      subcategory: "Sede",
-      category: "Defensoría del Pueblo",
-    };
-    const newRef = firebase_app.firestore().collection(table.collection).doc();
-    const res = await newRef.set(test);
-    console.log("adding test to", table.collection, res);
-
     axios
       .post(`https://defensoria-sf.web.app/api/v1/points`, {
         content: fileContent,
