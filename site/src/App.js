@@ -49,6 +49,9 @@ const hexToRgb = hex => {
 };
 const getColorFromCategory = name => {
   let cats = getWithExpiry("categories");
+  if (!cats) {
+    return "#000000";
+  }
   const category = Object.values(cats.categories).find(
     cat => cat.name === name
   );

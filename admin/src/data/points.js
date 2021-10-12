@@ -1,6 +1,7 @@
 export const table = {
   collection: "points",
   label: "Instituciones",
+  filters: ["name", "category", "city"],
   fields: [
     {
       name: "id",
