@@ -55,6 +55,7 @@ const Footer = () => (
             <img
               src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-defensoria-del-pueblo.png"
               className="img-responsive"
+              alt=""
             />
           </a>
           <a
@@ -67,6 +68,7 @@ const Footer = () => (
             <img
               src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-unicef.png"
               className="img-responsive"
+              alt=""
             />
           </a>
           <a
@@ -79,6 +81,7 @@ const Footer = () => (
             <img
               src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-observatorio.png"
               className="img-responsive"
+              alt=""
             />
           </a>
           <a
@@ -91,6 +94,7 @@ const Footer = () => (
             <img
               src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-red-ninez-adolescencia.png"
               className="img-responsive"
+              alt=""
             />
           </a>
           <a
@@ -102,6 +106,7 @@ const Footer = () => (
             <img
               src="https://www.defensorianna.gob.ar/modules/skin/full/img/logo-adpra.png"
               className="img-responsive"
+              alt=""
             />
           </a>
         </div>

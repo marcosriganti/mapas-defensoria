@@ -15,7 +15,6 @@ import { firebase_app } from "./firebase";
 import cities from "./assets/cities.json";
 
 import { setWithExpiry, getWithExpiry } from "./utils/localStorage";
-import { TypeCategories } from "./components/formElements";
 
 // Icons
 
@@ -25,6 +24,10 @@ import instagram from "./assets/instagram.svg";
 import youtube from "./assets/youtube.svg";
 import website from "./assets/website.svg";
 
+const URL_CATEGORIES = "https://defensoria-sf.web.app/api/v1/categories";
+const URL_POINTS =
+  "https://firebasestorage.googleapis.com/v0/b/defensoria-sf.appspot.com/o/storage-points.json?alt=media&token=450e5d85-8175-41d4-a6b1-c2303ef04725";
+
 const selectCities = cities.map(item => {
   let newName = item.full_name.split("-");
   return {
@@ -33,12 +36,12 @@ const selectCities = cities.map(item => {
   };
 });
 
+const tags = [];
+
 const getCategories = async () => {
   let cats = getWithExpiry("categories");
   if (!cats) {
-    const res = await axios.get(
-      `https://defensoria-sf.web.app/api/v1/categories`
-    );
+    const res = await axios.get(URL_CATEGORIES);
     setWithExpiry("categories", res.data);
     cats = res.data;
   }
@@ -118,16 +121,6 @@ const FullMap = ({ list, location, callback }) => {
   );
 };
 
-const getSubcategories = async parent => {
-  const cats = await getCategories();
-  const categories = Object.values(cats.categories);
-  const children = categories.filter(item => item.name === parent);
-  if (children.length) {
-    return children[0].children;
-  }
-  return [];
-};
-
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState({});
@@ -136,7 +129,6 @@ function App() {
   const [result, setResult] = useState(null);
   const [categories, setCategories] = useState([]);
   const [params, setParams] = useState({});
-  const [subcategories, setSubcategories] = useState([]);
   const [location, setLocation] = useState([-60.1286333, -31.1672838]);
   const [featuresList, setFeaturesList] = useState([]);
 
@@ -155,7 +147,8 @@ function App() {
         setLoading(false);
       };
       getCats();
-
+      // leemos todos los puntos
+      //
       setLoading(false);
     }
   }, []);
@@ -276,6 +269,14 @@ function App() {
                 <h3 className="px-3 py-2  mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
                   Etiquetas
                 </h3>
+                <Select
+                  options={tags}
+                  isMulti
+                  placeholder=""
+                  className="block text-sm my-2"
+                  onChange={value => handleChange("category", value)}
+                />
+
                 <button
                   disabled={!validForm}
                   type="submit"
@@ -293,7 +294,6 @@ function App() {
                   onClick={ev => {
                     ev.preventDefault();
                     setParams({});
-                    setSubcategories([]);
                   }}
                   className={`px-4 mt-2 py-2  font-semibold text-center text-white   block w-full rounded-md 
                      ${
