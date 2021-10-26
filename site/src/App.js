@@ -63,7 +63,6 @@ const getCategories = async () => {
   return cats;
 };
 const getPoints = async () => {
-  console.log("getting all points");
   if (!window.allPoints) {
     const res = await axios.get(URL_POINTS);
     window.allPoints = res.data;
@@ -222,7 +221,6 @@ function App() {
       result = result.filter(point => params.category.includes(point.category));
     }
 
-    console.log("tags", params.tags);
     if (params.tags && params.tags.length > 0) {
       result = result.filter(
         point =>
