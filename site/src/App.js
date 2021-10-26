@@ -227,6 +227,7 @@ function App() {
       result = result.filter(
         point =>
           params.tags &&
+          point.tags &&
           point.tags.find((tag, index) => {
             return params.tags.includes(tag.id);
           })
