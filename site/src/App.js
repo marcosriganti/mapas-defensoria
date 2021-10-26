@@ -26,7 +26,7 @@ import website from "./assets/website.svg";
 
 const URL_CATEGORIES = "https://defensoria-sf.web.app/api/v1/categories";
 const URL_POINTS =
-  "https://firebasestorage.googleapis.com/v0/b/defensoria-sf.appspot.com/o/storage-points.json?alt=media&token=450e5d85-8175-41d4-a6b1-c2303ef04725";
+  "https://firebasestorage.googleapis.com/v0/b/defensoria-sf.appspot.com/o/storage-points.json?alt=media&token=8754a622-8381-4f20-81f6-de80db317502";
 const selectCities = cities.map(item => {
   let newName = item.full_name.split("-");
   return {
