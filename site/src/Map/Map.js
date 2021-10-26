@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { fromLonLat } from "ol/proj";
 import "./Map.css";
 import MapContext from "./MapContext";
 import * as ol from "ol";
@@ -21,15 +22,17 @@ const Map = ({ children, zoom, center, callback }) => {
     setMap(mapObject);
     mapObject.on("click", ev => {
       const features = mapObject.getFeaturesAtPixel(ev.pixel);
-
+      ev.preventDefault();
       if (features.length === 0) {
         return false;
       } else {
-        console.log("triggering click");
         callback && callback(features);
+        return false;
       }
     });
-    return () => mapObject.setTarget(undefined);
+    return () => {
+      return mapObject.setTarget(undefined);
+    };
   }, []);
 
   // zoom change handler
@@ -42,7 +45,10 @@ const Map = ({ children, zoom, center, callback }) => {
   // center change handler
   useEffect(() => {
     if (!map) return;
-    map.getView().setCenter(center);
+    const base = fromLonLat([-60.1286333, -31.1672838]);
+    if (JSON.stringify(center) !== JSON.stringify(base)) {
+      map.getView().setCenter(center);
+    }
   }, [center]);
   return (
     <MapContext.Provider value={{ map }}>

@@ -124,9 +124,12 @@ const FullMap = ({ list, location, callback }) => {
     if (list.length > 0) {
       setFeatures(addMarkers(list));
     }
-    setCenter(location);
-  }, [list, location]);
+    // setCenter(location);
+    // }, [list, location]);
+  }, [list]);
+
   const newLocation = fromLonLat(center);
+  console.log(newLocation);
   return (
     <Map center={newLocation} zoom={zoom} callback={callback}>
       <Layers>
@@ -197,15 +200,15 @@ function App() {
     });
     if (key === "city" && val) {
       //check the latitud and
-      const item = cities.find(item => item.full_name === val);
-      if (item) {
-        if (item.lat && item.ltg && typeof item.lat === "string") {
-          setLocation([
-            parseFloat(item.ltg.replace(",", ".")),
-            parseFloat(item.lat.replace(",", ".")),
-          ]);
-        }
-      }
+      // const item = cities.find(item => item.full_name === val);
+      // if (item) {
+      //   if (item.lat && item.ltg && typeof item.lat === "string") {
+      //     setLocation([
+      //       parseFloat(item.ltg.replace(",", ".")),
+      //       parseFloat(item.lat.replace(",", ".")),
+      //     ]);
+      //   }
+      // }
     }
   };
   const handleSubmit = ev => {
