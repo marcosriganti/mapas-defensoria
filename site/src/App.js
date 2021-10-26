@@ -27,7 +27,6 @@ import website from "./assets/website.svg";
 const URL_CATEGORIES = "https://defensoria-sf.web.app/api/v1/categories";
 const URL_POINTS =
   "https://firebasestorage.googleapis.com/v0/b/defensoria-sf.appspot.com/o/storage-points.json?alt=media&token=450e5d85-8175-41d4-a6b1-c2303ef04725";
-
 const selectCities = cities.map(item => {
   let newName = item.full_name.split("-");
   return {
@@ -37,7 +36,23 @@ const selectCities = cities.map(item => {
 });
 
 const tags = [];
-
+const updateTags = () => {
+  const points = window.allPoints;
+  const tagsFound = [];
+  points.map(point => {
+    if (point.tags && point.tags.length > 0) {
+      point.tags.map(t => {
+        if (!tagsFound.includes(t.text)) {
+          tagsFound.push(t.text);
+          tags.push({
+            label: t.text,
+            value: t.text,
+          });
+        }
+      });
+    }
+  });
+};
 const getCategories = async () => {
   let cats = getWithExpiry("categories");
   if (!cats) {
@@ -46,6 +61,14 @@ const getCategories = async () => {
     cats = res.data;
   }
   return cats;
+};
+const getPoints = async () => {
+  console.log("getting all points");
+  if (!window.allPoints) {
+    const res = await axios.get(URL_POINTS);
+    window.allPoints = res.data;
+  }
+  return window.allPoints;
 };
 
 const hexToRgb = hex => {
@@ -131,11 +154,12 @@ function App() {
   const [params, setParams] = useState({});
   const [location, setLocation] = useState([-60.1286333, -31.1672838]);
   const [featuresList, setFeaturesList] = useState([]);
-
   useEffect(() => {
     if (loading) {
       const getCats = async () => {
         const cats = await getCategories();
+        await getPoints();
+        updateTags();
         setCategories(
           Object.values(cats.categories).map(category => {
             return {
@@ -147,7 +171,8 @@ function App() {
         setLoading(false);
       };
       getCats();
-      // leemos todos los puntos
+      // load the points
+
       //
       setLoading(false);
     }
@@ -183,53 +208,51 @@ function App() {
     }
   };
   const handleSubmit = ev => {
+    console.log("running submit", params);
     ev.preventDefault();
     setSearching(true);
     let list = [];
 
-    if (!params.city && !params.category) return false;
+    let result = window.allPoints;
 
-    let query = firebase_app.firestore().collection("points");
     if (params.city && params.city.length > 0) {
-      query = query.where("city", "in", params.city);
+      result = result.filter(point => params.city.includes(point.city));
     }
     if (params.category && params.category.length > 0) {
-      query = query.where("category", "in", params.category);
+      result = result.filter(point => params.category.includes(point.category));
     }
 
-    // if (params.subcategory) {
-    //   query = query.where("subcategory", "==", params.subcategory);
-    // }
+    console.log("tags", params.tags);
+    if (params.tags && params.tags.length > 0) {
+      result = result.filter(
+        point =>
+          params.tags &&
+          point.tags.find((tag, index) => {
+            return params.tags.includes(tag.id);
+          })
+      );
+    }
 
-    query.get().then(querySnapshot => {
-      const points = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setResult(points);
-      window.result = points;
-      setSearching(false);
-      points.map(item => {
-        if (
-          item.latitud &&
-          item.longitude &&
-          typeof item.latitud === "string"
-        ) {
-          list.push({
-            id: item.id,
-            category: item.category,
-            lonLat: [
-              parseFloat(item.longitude.replace(",", ".")),
-              parseFloat(item.latitud.replace(",", ".")),
-            ],
-          });
-        }
-      });
-      setFeaturesList(list);
+    setResult(result);
+    setSearching(false);
+
+    result.map(item => {
+      if (item.latitud && item.longitude && typeof item.latitud === "string") {
+        list.push({
+          id: item.id,
+          category: item.category,
+          lonLat: [
+            parseFloat(item.longitude.replace(",", ".")),
+            parseFloat(item.latitud.replace(",", ".")),
+          ],
+        });
+      }
     });
+    setFeaturesList(list);
+    window.result = result;
     return false;
   };
-  const validForm = params.city || params.category;
+  const validForm = true;
   const selectCategories = categories;
   return (
     <div>
@@ -274,7 +297,7 @@ function App() {
                   isMulti
                   placeholder=""
                   className="block text-sm my-2"
-                  onChange={value => handleChange("category", value)}
+                  onChange={value => handleChange("tags", value)}
                 />
 
                 <button
@@ -333,7 +356,11 @@ function App() {
                           id={`result_${item.id}`}
                           key={`result_${item.id}`}
                         >
-                          <ShowItem item={item} onList />
+                          <ShowItem
+                            item={item}
+                            onList
+                            key={`item-${item.id}`}
+                          />
                         </div>
                       );
                     })}
@@ -345,7 +372,7 @@ function App() {
         </div>
       </main>
       <div
-        class={`flex fixed justify-center top-0 bottom-0 left-0 right-0 items-center	bg-green-200 bg-opacity-50 ${
+        className={`flex fixed justify-center top-0 bottom-0 left-0 right-0 items-center	bg-green-200 bg-opacity-50 ${
           !showModal && `hidden`
         }`}
       >

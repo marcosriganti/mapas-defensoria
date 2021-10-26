@@ -4,10 +4,18 @@ import * as express from "express";
 import { backup } from "firestore-export-import";
 import * as bodyParser from "body-parser";
 import { BigBatch } from "@qualdesk/firestore-big-batch";
+// import * as allPoints from "./points.json";
 
+// const fs = require("fs");
+// const util = require("util");
+// // Convert fs.readFile into Promise version of same
+// const readFile = util.promisify(fs.readFile);
 const cors = require("cors");
 
+// const pointsFile = "./points.json";
+
 admin.initializeApp(functions.config().firebase);
+const myBucket = admin.storage().bucket();
 
 const db = admin.firestore();
 const batch = new BigBatch({ firestore: db }); //
@@ -25,21 +33,13 @@ main.use(bodyParser.urlencoded(opt));
 // eslint-disable-next-line import/prefer-default-export
 export const webApi = functions.https.onRequest(main);
 
-interface Contact {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
 interface User {
   password: string;
   email: string;
 }
 const firestoreAutoId = (): string => {
   const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
   let autoId = "";
-
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < 20; i++) {
     autoId += CHARS.charAt(Math.floor(Math.random() * CHARS.length));
@@ -47,89 +47,41 @@ const firestoreAutoId = (): string => {
   return autoId;
 };
 
-const getDocument = (collectionName: string, documentId: string) => {
-  const docRef = db.collection(collectionName).doc(documentId);
-  return docRef
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        return doc.data();
-      }
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-      return false;
-    })
-    .catch((error) => {
-      console.log("Error getting document:", error);
+const updateStorage = async () => {
+  // This updates the Storage with all the points
+  const docs = [];
+  const pointsRef = db.collection("points");
+  const activeRef = await pointsRef.get();
+  // eslint-disable-next-line no-restricted-syntax
+  for (const doc of activeRef.docs) {
+    docs.push({
+      id: doc.id,
+      ...doc.data(),
     });
+  }
+  const jsonString = JSON.stringify(docs);
+  const file = myBucket.file("storage-points.json");
+  file.save(jsonString);
 };
 
-const contactsCollection = "contacts";
-
-// Add new contact
-app.post("/contacts", async (req, res) => {
-  try {
-    const contact: Contact = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-    };
-
-    const newDoc = await db
-      .collection(contactsCollection)
-      .add(contact)
-      .then((docRef) => docRef)
-      .catch((error) => error);
-
-    res.status(201).send(`Created a new contact: ${newDoc.id}`);
-  } catch (error) {
-    res
-      .status(400)
-      .send("Contact should only contains firstName, lastName and email!!!");
-  }
-});
-// Update new contact
-app.patch("/contacts/:contactId", async (req, res) => {
-  const updatedDoc = await db
-    .collection(contactsCollection)
-    .doc(req.params.contactId)
-    .update(req.body)
-    .then(() => true)
-    .catch((err) => err);
-
-  res.status(204).send(`Update a new contact: ${updatedDoc}`);
-});
-// View a contact
-app.get("/contacts/:contactId", (req, res) => {
-  getDocument(contactsCollection, req.params.contactId)
-    .then((doc) => res.status(200).send(doc))
-    .catch((error) => res.status(400).send(`Cannot get contact: ${error}`));
-});
-// View all contacts
-app.get("/contacts", (req, res) => {
-  backup(contactsCollection)
-    .then((data) => res.status(200).send(data))
-    .catch((error) => res.status(400).send(`Cannot get contacts: ${error}`));
-});
-// Delete a contact
-app.delete("/contacts/:contactId", async (req, res) => {
-  const deletedContact = await db
-    .collection(contactsCollection)
-    .doc(req.params.contactId)
-    .delete()
-    .then(() => ({
-      status: true,
-      message: `${req.params.contactId} successfully deleted!`,
-    }))
-    .catch((error) => ({ status: false, message: error }));
-
-  res.status(204).send(`Contact is deleted: ${deletedContact}`);
-});
-
-// Real
+// const getDocument = (collectionName: string, documentId: string) => {
+//   const docRef = db.collection(collectionName).doc(documentId);
+//   return docRef
+//     .get()
+//     .then(doc => {
+//       if (doc.exists) {
+//         return doc.data();
+//       }
+//       // doc.data() will be undefined in this case
+//       console.log("No such document!");
+//       return false;
+//     })
+//     .catch(error => {
+//       console.log("Error getting document:", error);
+//     });
+// };
 
 // Categorias
-// View all contacts
 app.get("/categories", (req, res) => {
   backup("categories")
     .then((data) => res.status(200).send(data))
@@ -261,9 +213,21 @@ app.post("/points", async (req, res) => {
   // eslint-disable-next-line array-callback-return
   records.map((record) => {
     const id = firestoreAutoId();
-    const ref = db.collection("points").doc(id);
-    batch.set(ref, parseRecord(record), { merge: true });
+    const refPoint = db.collection("points").doc(id);
+    batch.set(refPoint, parseRecord(record), { merge: true });
   });
   await batch.commit();
+  updateStorage();
   res.status(200).send("records updated");
+});
+
+// app.get("/allPoints", async (req, res) => {
+//   res.status(200).json(allPoints);
+// });
+
+// app.get("/updatePoints", async (req, res) => res.status(200).send("Updating the points"));
+
+app.get("/updateStorage", async (req, res) => {
+  await updateStorage();
+  return res.status(200).send("Updating the points");
 });
