@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import Map from "./Map";
 import { Layers, TileLayer, VectorLayer } from "./Layers";
 import { Style, Icon } from "ol/style";
@@ -10,14 +11,10 @@ import { fromLonLat } from "ol/proj";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { Controls, FullScreenControl } from "./Controls";
-import Select from "react-select";
-import { firebase_app } from "./firebase";
+
 import cities from "./assets/cities.json";
-
 import { setWithExpiry, getWithExpiry } from "./utils/localStorage";
-
 // Icons
-
 import facebook from "./assets/facebook.svg";
 import twitter from "./assets/twitter.svg";
 import instagram from "./assets/instagram.svg";
@@ -151,6 +148,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [categories, setCategories] = useState([]);
   const [params, setParams] = useState({});
+  const [dropDownValue, setDropDownValue] = useState({});
   const [location, setLocation] = useState([-60.1286333, -31.1672838]);
   const [featuresList, setFeaturesList] = useState([]);
   useEffect(() => {
@@ -189,6 +187,10 @@ function App() {
   };
   const handleChange = (key, val) => {
     const newVal = val.map(item => item.value);
+    setDropDownValue({
+      ...dropDownValue,
+      [key]: val,
+    });
     setParams({
       ...params,
       [key]: newVal,
@@ -275,6 +277,11 @@ function App() {
                     return base.indexOf(q) > -1;
                   }}
                   onChange={value => handleChange("city", value)}
+                  value={
+                    dropDownValue && dropDownValue.city
+                      ? dropDownValue.city
+                      : null
+                  }
                 />
                 <h3 className="px-3 py-2 mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
                   Categoría
@@ -286,6 +293,11 @@ function App() {
                     placeholder="Todas las categorías"
                     className="block text-sm my-2"
                     onChange={value => handleChange("category", value)}
+                    value={
+                      dropDownValue && dropDownValue.category
+                        ? dropDownValue.category
+                        : null
+                    }
                   />
                 )}
                 <h3 className="px-3 py-2  mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
@@ -297,6 +309,11 @@ function App() {
                   placeholder=""
                   className="block text-sm my-2"
                   onChange={value => handleChange("tags", value)}
+                  value={
+                    dropDownValue && dropDownValue.tags
+                      ? dropDownValue.tags
+                      : null
+                  }
                 />
 
                 <button
@@ -316,6 +333,7 @@ function App() {
                   onClick={ev => {
                     ev.preventDefault();
                     setParams({});
+                    setDropDownValue({});
                   }}
                   className={`px-4 mt-2 py-2  font-semibold text-center text-white   block w-full rounded-md 
                      ${
