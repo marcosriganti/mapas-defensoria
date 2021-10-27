@@ -123,13 +123,14 @@ const FullMap = ({ list, location, callback }) => {
   useEffect(() => {
     if (list.length > 0) {
       setFeatures(addMarkers(list));
+    } else {
+      setFeatures([]);
     }
     // setCenter(location);
     // }, [list, location]);
   }, [list]);
 
   const newLocation = fromLonLat(center);
-  console.log(newLocation);
   return (
     <Map center={newLocation} zoom={zoom} callback={callback}>
       <Layers>
@@ -171,9 +172,6 @@ function App() {
         setLoading(false);
       };
       getCats();
-      // load the points
-
-      //
       setLoading(false);
     }
   }, []);
@@ -211,23 +209,38 @@ function App() {
       // }
     }
   };
+  const clearResults = () => {
+    setLoading(true);
+    setParams({});
+    setDropDownValue({});
+    if (window.result && window.result.length > 0) {
+      setResult(null);
+      setFeaturesList([]);
+      window.result = null;
+    }
+    setLoading(false);
+  };
   const handleSubmit = ev => {
     console.log("running submit", params);
     ev.preventDefault();
     setSearching(true);
     let list = [];
 
-    let result = window.allPoints;
+    let searchResult = window.allPoints;
 
     if (params.city && params.city.length > 0) {
-      result = result.filter(point => params.city.includes(point.city));
+      searchResult = searchResult.filter(point =>
+        params.city.includes(point.city)
+      );
     }
     if (params.category && params.category.length > 0) {
-      result = result.filter(point => params.category.includes(point.category));
+      searchResult = searchResult.filter(point =>
+        params.category.includes(point.category)
+      );
     }
 
     if (params.tags && params.tags.length > 0) {
-      result = result.filter(
+      searchResult = searchResult.filter(
         point =>
           params.tags &&
           point.tags &&
@@ -237,10 +250,10 @@ function App() {
       );
     }
 
-    setResult(result);
+    setResult(searchResult);
     setSearching(false);
 
-    result.map(item => {
+    searchResult.map(item => {
       if (item.latitud && item.longitude && typeof item.latitud === "string") {
         list.push({
           id: item.id,
@@ -253,7 +266,7 @@ function App() {
       }
     });
     setFeaturesList(list);
-    window.result = result;
+    window.result = searchResult;
     return false;
   };
   const validForm = true;
@@ -335,8 +348,7 @@ function App() {
                   type="button"
                   onClick={ev => {
                     ev.preventDefault();
-                    setParams({});
-                    setDropDownValue({});
+                    clearResults();
                   }}
                   className={`px-4 mt-2 py-2  font-semibold text-center text-white   block w-full rounded-md 
                      ${
