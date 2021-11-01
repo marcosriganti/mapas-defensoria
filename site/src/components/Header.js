@@ -23,8 +23,8 @@ const Header = () => (
         </a>
         <div>
           <h1 className="text-2xl">
-            Georreferencia del Sistema de Protección de NNYA de la Provincia de
-            Santa Fe
+            Georreferencia del Sistema de Protección de Niños, Niñas y
+            Adolescentes de la Provincia de Santa Fe
           </h1>
         </div>
       </div>
