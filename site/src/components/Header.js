@@ -14,7 +14,7 @@ const Header = () => (
       />
     </div>
     <div className="container mx-auto">
-      <div className="flex flex-col md:flex-row items-center justify-between space-y-4 px-3 md:p-0">
+      <div className="flex flex-col md:flex-row items-center justify-between space-y-4 px-3 md:p-0 space-x-6">
         <a href="https://www.defensorianna.gob.ar/">
           <img
             src={logo}
@@ -22,7 +22,7 @@ const Header = () => (
           />
         </a>
         <div>
-          <h1 className="text-2xl">
+          <h1 className="text-2xl md:w-9/12 md:float-right">
             Georreferencia del Sistema de Protección de Niños, Niñas y
             Adolescentes de la Provincia de Santa Fe
           </h1>

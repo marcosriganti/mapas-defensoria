@@ -285,7 +285,7 @@ function App() {
                 <Select
                   options={selectCities}
                   isMulti
-                  placeholder="Todas las ciudades"
+                  placeholder="Todas las localidades"
                   className="block text-sm my-2"
                   filterOption={(option, inputValue) => {
                     const q = inputValue.toLowerCase();
