@@ -38,8 +38,7 @@ interface User {
   email: string;
 }
 const firestoreAutoId = (): string => {
-  const CHARS =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let autoId = "";
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < 20; i++) {
@@ -85,21 +84,21 @@ const updateStorage = async () => {
 // Categorias
 app.get("/categories", (req, res) => {
   backup("categories")
-    .then(data => res.status(200).send(data))
-    .catch(error => res.status(400).send(`Cannot get contacts: ${error}`));
+    .then((data) => res.status(200).send(data))
+    .catch((error) => res.status(400).send(`Cannot get contacts: ${error}`));
 });
 
 app.get("/users", (req, res) => {
   auth
     .listUsers(1000)
-    .then(listUsersResult => {
+    .then((listUsersResult) => {
       const data = [];
-      listUsersResult.users.forEach(userRecord => {
+      listUsersResult.users.forEach((userRecord) => {
         data.push(userRecord);
       });
       return res.status(200).send(data);
     })
-    .catch(error => {
+    .catch((error) => {
       console.log("Error listing users:", error);
     });
 });
@@ -117,13 +116,13 @@ app.post("/users", async (req, res) => {
   };
   auth
     .createUser(userInfo)
-    .then(userRecord => {
+    .then((userRecord) => {
       res.status(201).send(
         // eslint-disable-next-line comma-dangle
         `Usuario Creado: ${userRecord.uid}`
       );
     })
-    .catch(error => {
+    .catch((error) => {
       res.status(400).send(`Error: ${error}`);
     });
   // }
@@ -132,8 +131,8 @@ app.post("/users", async (req, res) => {
 app.get("/users/:userId", (req, res) => {
   auth
     .getUser(req.params.userId)
-    .then(userRecord => res.status(200).send(userRecord))
-    .catch(error => res.status(400).send(`Cannot get userRecord: ${error}`));
+    .then((userRecord) => res.status(200).send(userRecord))
+    .catch((error) => res.status(400).send(`Cannot get userRecord: ${error}`));
 });
 
 app.patch("/users/:userId", async (req, res) => {
@@ -143,10 +142,10 @@ app.patch("/users/:userId", async (req, res) => {
   };
   auth
     .updateUser(req.params.userId, user)
-    .then(userRecord => {
+    .then((userRecord) => {
       res.status(204).send(`Update a User : ${userRecord.uid}`);
     })
-    .catch(error => {
+    .catch((error) => {
       res.status(400).send(`Error: ${error}`);
     });
 });
@@ -157,7 +156,7 @@ app.delete("/users/:userId", async (req, res) => {
     .then(() => {
       res.status(204).send(`User is deleted: ${req.params.userId}`);
     })
-    .catch(error => {
+    .catch((error) => {
       res.status(400).send(`Error: ${error}`);
     });
 });
@@ -174,7 +173,7 @@ app.delete("/users/:userId", async (req, res) => {
 
 const parseTags = (tags: string) => {
   const r = [];
-  tags.split(";").forEach(key => {
+  tags.split(";").forEach((key) => {
     r.push({
       text: key.trim(),
       id: key.trim(),
@@ -183,7 +182,7 @@ const parseTags = (tags: string) => {
   return r;
 };
 
-const parseRecord = row => ({
+const parseRecord = (row) => ({
   name: row.nombre_institucion || null,
   description: row.descripcion || null,
   extended_description: row.informacion_detallada || null,
@@ -212,7 +211,7 @@ app.post("/points", async (req, res) => {
     res.status(200).send("No records to import ");
   }
   // eslint-disable-next-line array-callback-return
-  records.map(record => {
+  records.map((record) => {
     const id = firestoreAutoId();
     const refPoint = db.collection("points").doc(id);
     batch.set(refPoint, parseRecord(record), { merge: true });

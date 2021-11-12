@@ -17,6 +17,7 @@ const PointsPage = () => {
       window.location.reload();
     }
   };
+  const filterElements = table.filters;
   return (
     <Layout>
       <div className="container px-6 mx-auto grid">
@@ -51,6 +52,7 @@ const PointsPage = () => {
             table={table}
             onDelete={onDelete}
             reload={reload}
+            filterElements={filterElements}
           ></DataTable>
         </div>
       </div>

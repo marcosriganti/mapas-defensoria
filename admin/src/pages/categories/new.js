@@ -1,13 +1,13 @@
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import Layout from "../../components/Layout";
-import Form from "../../components/Form";
+import { Form } from "../../components/Form";
 import { firebase_app } from "../../firebase";
 import { table } from "../../data/categories";
 
 const CategoriesAddPage = () => {
   let history = useHistory();
-  const onSubmit = async (values) => {
+  const onSubmit = async values => {
     const newRef = firebase_app.firestore().collection(table.collection).doc();
     await newRef.set(values);
     history.replace(`/${table.collection}`);

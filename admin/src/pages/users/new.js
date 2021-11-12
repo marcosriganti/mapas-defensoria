@@ -3,17 +3,17 @@ import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../components/Layout";
 
-import Form from "../../components/Form";
+import { Form } from "../../components/Form";
 
 import { table } from "../../data/users";
 
 const UsersAddPage = () => {
   let history = useHistory();
 
-  const onSubmit = async (values) => {
+  const onSubmit = async values => {
     axios
       .post(`https://defensoria-sf.web.app/api/v1/users`, { ...values })
-      .then((res) => {
+      .then(res => {
         history.replace(`/${table.collection}`);
       });
   };

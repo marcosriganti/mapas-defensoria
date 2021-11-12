@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Autocomplete from "react-autocomplete";
 import { WithContext as ReactTags } from "react-tag-input";
 import { SwatchesPicker } from "react-color";
-
+import { firebase_app } from "../firebase";
 import cities from "../data/cities.json";
 
 const TypeNumber = ({ field, handleChange, values }) => {
@@ -32,15 +32,6 @@ const TypeColor = ({ field, handleChange, values }) => {
         }}
         name={field.name}
       />
-      {/* <input
-        name={field.name}
-        onChange={ev => handleChange(field.name, ev.target.value)}
-        className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-        placeholder=""
-        type="text"
-        minLength={field.min || 0}
-        value={values[field.name] ? values[field.name] : ""}
-      /> */}
     </label>
   );
 };
@@ -74,6 +65,47 @@ const TypeTextarea = ({ field, handleChange, values }) => {
       >
         {values[field.name] ? values[field.name] : ""}
       </textarea>
+    </label>
+  );
+};
+const getCategories = async () => {
+  let query = firebase_app.firestore().collection("categories");
+  const querySnapshot = await query.get();
+  let cats = [];
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+    cats.push(data.name);
+  });
+  return cats;
+};
+const TypeCategory = ({ field, handleChange, values }) => {
+  const [cats, setCats] = useState([]);
+  useEffect(() => {
+    const getCats = async () => {
+      const newCats = await getCategories();
+      return newCats;
+    };
+    getCats().then(data => {
+      setCats(data);
+    });
+  }, []);
+
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+      <select
+        name={field.name}
+        onChange={ev => handleChange(field.name, ev.target.value)}
+        className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+        placeholder=""
+        type="text"
+        value={values[field.name] ? values[field.name] : ""}
+      >
+        <option value="">Seleciona una categoria</option>
+        {cats.map(item => (
+          <option value={item}>{item}</option>
+        ))}
+      </select>
     </label>
   );
 };
@@ -201,7 +233,8 @@ const TypeImage = ({ field, handleChange, values }) => {
   );
 };
 
-const types = {
+export const types = {
+  selectCategory: TypeCategory,
   text: TypeText,
   number: TypeNumber,
   textarea: TypeTextarea,
@@ -212,7 +245,7 @@ const types = {
   color: TypeColor,
 };
 
-const Form = ({ fields, onSubmit, initialValues }) => {
+export const Form = ({ fields, onSubmit, initialValues }) => {
   const [values, setValues] = useState(initialValues ?? {});
   const handleChange = (key, value) => {
     setValues({
@@ -220,6 +253,7 @@ const Form = ({ fields, onSubmit, initialValues }) => {
       [key]: value,
     });
   };
+
   return (
     <div>
       {fields.map(field => {
@@ -252,4 +286,3 @@ const Form = ({ fields, onSubmit, initialValues }) => {
     </div>
   );
 };
-export default Form;

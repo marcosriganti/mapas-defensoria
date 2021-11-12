@@ -196,18 +196,6 @@ function App() {
       ...params,
       [key]: newVal,
     });
-    if (key === "city" && val) {
-      //check the latitud and
-      // const item = cities.find(item => item.full_name === val);
-      // if (item) {
-      //   if (item.lat && item.ltg && typeof item.lat === "string") {
-      //     setLocation([
-      //       parseFloat(item.ltg.replace(",", ".")),
-      //       parseFloat(item.lat.replace(",", ".")),
-      //     ]);
-      //   }
-      // }
-    }
   };
   const clearResults = () => {
     setLoading(true);
@@ -317,7 +305,7 @@ function App() {
                   />
                 )}
                 <h3 className="px-3 py-2  mb-2 font-bold text-gray-800 bg-gray-200 rounded-md">
-                  Etiquetas
+                  Subcategorías / Etiquetas
                 </h3>
                 <Select
                   options={tags}

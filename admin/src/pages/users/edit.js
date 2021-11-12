@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../components/Layout";
-import Form from "../../components/Form";
+import { Form } from "../../components/Form";
 import { table } from "../../data/users";
 
 const PointsEditPage = () => {

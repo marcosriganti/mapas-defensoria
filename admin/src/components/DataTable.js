@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { types } from "../components/Form";
 import { firebase_app } from "../firebase";
 
 export const Table = ({ table, items, loading, onDelete }) => {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full  shadow">
       {loading ? (
         <svg
           className="animate-spin mx-auto my-4 h-5 w-5 text-indigo-500"
@@ -27,7 +28,7 @@ export const Table = ({ table, items, loading, onDelete }) => {
           ></path>
         </svg>
       ) : (
-        <table className="w-full whitespace-no-wrap">
+        <table className="w-full whitespace-no-wrap rounded-lg overflow-hidden">
           <thead>
             <tr className="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
               {table.fields.map(field => {
@@ -127,7 +128,7 @@ export const Table = ({ table, items, loading, onDelete }) => {
     </div>
   );
 };
-export const DataTable = ({ table, onDelete }) => {
+export const DataTable = ({ table, onDelete, filterElements }) => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [last, setLast] = useState(null);
@@ -145,6 +146,13 @@ export const DataTable = ({ table, onDelete }) => {
     }
     if (previous && action === "prev") {
       query = query.endAt(last);
+    }
+    if (Object.keys(values).length > 0) {
+      for (const key in values) {
+        if (values[key] && values[key].length > 0) {
+          query = query.where(key, "==", values[key]);
+        }
+      }
     }
     const querySnapshot = await query.get();
     querySnapshot.forEach(doc => {
@@ -164,8 +172,52 @@ export const DataTable = ({ table, onDelete }) => {
       setLoading(false);
     }
   }, [loading]);
+
+  const [values, setValues] = useState({});
+  const handleChange = (key, value) => {
+    setValues({
+      ...values,
+      [key]: value,
+    });
+  };
+  const handleSearch = ev => {
+    ev.preventDefault();
+    getData();
+  };
   return (
     <>
+      {filterElements && (
+        <form
+          className="shadow mb-3 bg-white p-3 rounded-lg"
+          onSubmit={handleSearch}
+        >
+          <h1 className="text-lg font-semibold text-gray-700">Buscar</h1>
+          <div className="flex flex-row space-x-2 items-end">
+            {filterElements.map(field => {
+              const Element = types[field.type];
+              return (
+                <div
+                  className="block mt-4 text-sm w-1/4"
+                  key={`field-${field.name}`}
+                >
+                  <Element
+                    field={field}
+                    handleChange={handleChange}
+                    values={values}
+                  ></Element>
+                </div>
+              );
+            })}
+            <button
+              className="py-3  px-4 bg-blue-500 inline rounded text-white text-sm mb-1"
+              type="submit"
+            >
+              Enviar
+            </button>
+          </div>
+        </form>
+      )}
+
       <Table
         table={table}
         loading={loading}
@@ -200,27 +252,28 @@ export const DataTable = ({ table, onDelete }) => {
                   Anterior
                 </button>
               </li>
-
-              <li>
-                <button
-                  className="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple flex align-center"
-                  aria-label="Next"
-                  onClick={() => getData("next")}
-                >
-                  Siguiente
-                  <svg
-                    className="w-4 h-4 fill-current"
-                    aria-hidden="true"
-                    viewBox="0 0 20 20"
+              {!(items.length < limit) && (
+                <li>
+                  <button
+                    className="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple flex align-center"
+                    aria-label="Next"
+                    onClick={() => getData("next")}
                   >
-                    <path
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"
-                      fillRule="evenodd"
-                    ></path>
-                  </svg>
-                </button>
-              </li>
+                    Siguiente
+                    <svg
+                      className="w-4 h-4 fill-current"
+                      aria-hidden="true"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"
+                        fillRule="evenodd"
+                      ></path>
+                    </svg>
+                  </button>
+                </li>
+              )}
             </ul>
           </nav>
         </span>

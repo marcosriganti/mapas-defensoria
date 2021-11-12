@@ -1,7 +1,23 @@
 export const table = {
   collection: "points",
   label: "Instituciones",
-  filters: ["name", "category", "city"],
+  filters: [
+    {
+      name: "category",
+      type: "selectCategory",
+      label: "Categoría",
+    },
+    {
+      name: "city",
+      type: "customCities",
+      label: "Ciudad",
+    },
+    {
+      name: "name",
+      type: "text",
+      label: "Nombre Institucion (Exacto)",
+    },
+  ],
   fields: [
     {
       name: "id",
@@ -11,21 +27,22 @@ export const table = {
     },
 
     {
-      name: "category",
-      label: "Categoría",
-      type: "text",
-    },
-    {
-      name: "subcategory",
-      label: "Subcategoría",
-      type: "text",
-    },
-    {
       name: "name",
       label: "Nombre de la Institucion",
       type: "text",
       required: true,
       onTable: true,
+    },
+    {
+      name: "category",
+      label: "Categoría",
+      type: "selectCategory",
+      onTable: true,
+    },
+    {
+      name: "subcategory",
+      label: "Subcategoría",
+      type: "text",
     },
     {
       name: "image",

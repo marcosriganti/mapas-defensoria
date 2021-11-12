@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
 import Layout from "../../components/Layout";
-import Form from "../../components/Form";
+import { Form } from "../../components/Form";
 import { firebase_app } from "../../firebase";
 import { table } from "../../data/categories";
 

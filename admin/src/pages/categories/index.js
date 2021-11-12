@@ -30,7 +30,7 @@ const CategoriesPage = () => {
             Agregar
           </Link>
         </div>
-        <div className="w-full overflow-hidden rounded-lg shadow-xs">
+        <div className="w-full">
           <DataTable table={table} onDelete={onDelete}></DataTable>
         </div>
       </div>
