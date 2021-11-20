@@ -11,8 +11,8 @@ const PointsAddPage = () => {
     const newRef = firebase_app.firestore().collection(table.collection).doc();
     await newRef.set({
       ...values,
-      createdAt: firebase_app.firestore.Timestamp.fromDate(new Date()),
-      updatedAt: firebase_app.firestore.Timestamp.fromDate(new Date()),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     history.replace(`/${table.collection}`);
   };

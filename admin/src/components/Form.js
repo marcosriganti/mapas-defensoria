@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Autocomplete from "react-autocomplete";
+import Select from "react-select";
 import { WithContext as ReactTags } from "react-tag-input";
 import { SwatchesPicker } from "react-color";
 import { firebase_app } from "../firebase";
@@ -127,30 +127,30 @@ const TypeSelect = ({ field, handleChange, values }) => {
     </label>
   );
 };
+const selectCities = cities.map(item => {
+  let newName = item.full_name.split("-");
+  return {
+    value: item.full_name,
+    label: newName[0] + " - Depto. " + newName[1],
+  };
+});
+
 const TypeCities = ({ field, handleChange, values }) => {
   return (
     <label className="block text-sm">
       <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
-      <div className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input">
-        <Autocomplete
-          className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-          getItemValue={item => item.full_name}
-          wrapperStyle={{ width: "100%" }}
-          items={cities}
-          shouldItemRender={(item, value) =>
-            item.full_name.toLowerCase().indexOf(value.toLowerCase()) > -1
-          }
-          renderItem={(item, isHighlighted) => (
-            <div
-              style={{ background: isHighlighted ? "lightgray" : "white" }}
-              className="w-full p-2"
-            >
-              {item.full_name}
-            </div>
-          )}
+      <div>
+        <Select
+          options={selectCities}
+          placeholder="Localidades"
+          className="block text-sm my-2 no-focus"
+          filterOption={(option, inputValue) => {
+            const q = inputValue.toLowerCase();
+            const base = option.value.toLowerCase().split("-")[0];
+            return base.indexOf(q) > -1;
+          }}
+          onChange={value => handleChange("city", value)}
           value={values[field.name] ? values[field.name] : ""}
-          onChange={ev => handleChange(field.name, ev.target.value)}
-          onSelect={val => handleChange(field.name, val)}
         />
       </div>
     </label>
@@ -247,6 +247,7 @@ export const types = {
 
 export const Form = ({ fields, onSubmit, initialValues }) => {
   const [values, setValues] = useState(initialValues ?? {});
+  const [submitting, setSubmitting] = useState(false);
   const handleChange = (key, value) => {
     setValues({
       ...values,
@@ -278,10 +279,34 @@ export const Form = ({ fields, onSubmit, initialValues }) => {
         className="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
         onClick={ev => {
           ev.preventDefault();
+          setSubmitting(true);
           onSubmit(values);
         }}
       >
-        Enviar
+        {submitting ? (
+          <svg
+            className="animate-spin mx-auto h-5 w-5 text-indigo-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        ) : (
+          `Enviar`
+        )}
       </button>
     </div>
   );

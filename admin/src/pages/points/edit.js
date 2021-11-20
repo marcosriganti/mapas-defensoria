@@ -29,7 +29,7 @@ const PointsEditPage = () => {
       .doc(id);
     await newRef.set({
       ...values,
-      updatedAt: firebase_app.firestore.Timestamp.fromDate(new Date()),
+      updatedAt: new Date(),
     });
     history.replace(`/${table.collection}`);
   };
