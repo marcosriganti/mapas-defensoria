@@ -78,6 +78,61 @@ const getCategories = async () => {
   });
   return cats;
 };
+
+const getSubCategories = async (cat) => {
+  let query = firebase_app.firestore().collection("categories").where('name', '==', cat);
+  const querySnapshot = await query.get();
+  let cats = [];
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+    console.log(data)
+    data.children.forEach(subcat => {
+      cats.push(subcat.text);
+    } )
+    
+  });
+  return cats;
+};
+
+const TypeSubCategory = ({ field, handleChange, values }) => {
+  const [subcats, setSubCats] = useState([]);
+
+  useEffect( () => {
+    const getSubCats = async (cat) => {
+      const newSubcats = await getSubCategories(cat);
+      return newSubcats;
+    };
+
+    if(values.category){
+      getSubCats(values.category).then(data => {
+        setSubCats(data);
+      });
+    }else{
+      setSubCats([]);
+    }
+    
+    console.log('loading subcategories')
+  }, [values.category])
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700 dark:text-gray-400">{field.label}</span>
+      <select
+      
+        name={field.name}
+        onChange={ev => handleChange(field.name, ev.target.value)}
+        className="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+        placeholder=""
+        type="text"
+        value={values[field.name] ? values[field.name] : ""}
+      >
+        <option value="">Seleciona una subcategoria</option>
+        {subcats.map(item => (
+          <option value={item}>{item}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
 const TypeCategory = ({ field, handleChange, values }) => {
   const [cats, setCats] = useState([]);
   useEffect(() => {
@@ -237,6 +292,7 @@ const TypeImage = ({ field, handleChange, values }) => {
 
 export const types = {
   selectCategory: TypeCategory,
+  selectSubCategory: TypeSubCategory,
   text: TypeText,
   number: TypeNumber,
   textarea: TypeTextarea,

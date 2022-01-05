@@ -42,7 +42,7 @@ export const table = {
     {
       name: "subcategory",
       label: "Subcategoría",
-      type: "text",
+      type: "selectSubCategory",
     },
     {
       name: "image",
