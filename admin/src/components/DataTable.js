@@ -149,9 +149,10 @@ export const DataTable = ({ table, onDelete, filterElements }) => {
     }
     if (Object.keys(values).length > 0) {
       for (const key in values) {
-        if(typeof values[key] === "object" && values[key].value.length) {
+        if(typeof values[key] === "object" && values[key] !== null && values[key].value.length) {
+          console.log('adding city ', key, "==", values[key].value)
           query = query.where(key, "==", values[key].value);
-        } else  if(values[key] && values[key].length > 0) {
+        } else  if(values[key] && values[key] !== null  && values[key].length > 0) {
           query = query.where(key, "==", values[key]);
           
         }

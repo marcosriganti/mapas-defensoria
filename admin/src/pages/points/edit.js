@@ -19,7 +19,12 @@ const PointsEditPage = () => {
       .then(doc => {
         // doc.data() is never undefined for query doc snapshots
         setLoading(false);
-        setData(doc.data());
+        let data = doc.data();
+        data.city = {
+          value: data.city,
+          label: data.city,
+        }
+        setData(data);
       });
   }, [id]);
   const onSubmit = async values => {
@@ -29,6 +34,7 @@ const PointsEditPage = () => {
       .doc(id);
     await newRef.set({
       ...values,
+      city: values.city && values.city.value ? values.city.value : values.city ,
       updatedAt: new Date(),
     });
     history.replace(`/${table.collection}`);

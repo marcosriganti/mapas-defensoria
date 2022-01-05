@@ -11,6 +11,7 @@ const PointsAddPage = () => {
     const newRef = firebase_app.firestore().collection(table.collection).doc();
     await newRef.set({
       ...values,
+      city: values.city && values.city.value ? values.city.value : values.city, 
       createdAt: new Date(),
       updatedAt: new Date(),
     });
