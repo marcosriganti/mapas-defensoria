@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import Layout from "../../components/Layout";
 import { DataTable } from "../../components/DataTable";
 import { firebase_app } from "../../firebase";
 import { table } from "../../data/points";
 
+
 const PointsPage = () => {
   const [reload, setReload] = useState(null);
+  const [updating, setUpdating] = useState(false)
   const onDelete = async uid => {
     if (window.confirm("Seguro quiere eliminar la institucion?")) {
       await firebase_app
@@ -38,6 +41,26 @@ const PointsPage = () => {
             >
               Importar Archivo
             </Link>
+
+            <button
+              onClick={(ev) => {
+
+                ev.preventDefault();
+                if(!updating){
+                  setUpdating(true)
+                  axios
+                  .get(`https://defensoria-sf.web.app/api/v1/updateStorage`).then(data => {
+                    setUpdating(false)
+                  })
+                }
+                
+              }}
+              className={`p-2 bg-${updating ? `gray` : `orange` }-500 inline rounded text-white text-sm`}
+            >
+              {updating ? `Actualizando...` : `Actualizar Publico` }
+            </button>
+
+            
           </div>
         </div>
         <div

@@ -64,22 +64,6 @@ const updateStorage = async () => {
   file.save(jsonString);
 };
 
-// const getDocument = (collectionName: string, documentId: string) => {
-//   const docRef = db.collection(collectionName).doc(documentId);
-//   return docRef
-//     .get()
-//     .then(doc => {
-//       if (doc.exists) {
-//         return doc.data();
-//       }
-//       // doc.data() will be undefined in this case
-//       console.log("No such document!");
-//       return false;
-//     })
-//     .catch(error => {
-//       console.log("Error getting document:", error);
-//     });
-// };
 
 // Categorias
 app.get("/categories", (req, res) => {
@@ -161,15 +145,6 @@ app.delete("/users/:userId", async (req, res) => {
     });
 });
 // Masive
-
-// const addCategory = async (name) => {
-//   const newDoc = await db
-//     .collection("categories")
-//     .add({ name })
-//     .then((docRef) => docRef)
-//     .catch((error) => error);
-//   return newDoc;
-// };
 
 const parseTags = (tags: string) => {
   const r = [];
