@@ -23,8 +23,8 @@ import website from "./assets/website.svg";
 
 const URL_CATEGORIES = "https://defensoria-sf.web.app/api/v1/categories";
 const URL_POINTS =
-  "https://firebasestorage.googleapis.com/v0/b/defensoria-sf.appspot.com/o/storage-points.json?alt=media&token=8754a622-8381-4f20-81f6-de80db317502";
-const selectCities = cities.map(item => {
+  "https://firebasestorage.googleapis.com/v0/b/defensoria-sf.appspot.com/o/storage-points.json?alt=media&token=2342f6e6-6927-4a5d-99fb-5991a9302605";
+const selectCities = cities.map((item) => {
   let newName = item.full_name.split("-");
   return {
     value: item.full_name,
@@ -36,9 +36,9 @@ const tags = [];
 const updateTags = () => {
   const points = window.allPoints;
   const tagsFound = [];
-  points.map(point => {
+  points.map((point) => {
     if (point.tags && point.tags.length > 0) {
-      point.tags.map(t => {
+      point.tags.map((t) => {
         if (!tagsFound.includes(t.text)) {
           tagsFound.push(t.text);
           tags.push({
@@ -67,7 +67,7 @@ const getPoints = async () => {
   return window.allPoints;
 };
 
-const hexToRgb = hex => {
+const hexToRgb = (hex) => {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? `rgb(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
@@ -76,17 +76,17 @@ const hexToRgb = hex => {
       )} )`
     : null;
 };
-const getColorFromCategory = name => {
+const getColorFromCategory = (name) => {
   let cats = getWithExpiry("categories");
   if (!cats) {
     return "#000000";
   }
   const category = Object.values(cats.categories).find(
-    cat => cat.name === name
+    (cat) => cat.name === name
   );
   return hexToRgb(category && (category.color || "#000000"));
 };
-const getImageFromCategory = name => {
+const getImageFromCategory = (name) => {
   const color = getColorFromCategory(name);
   let svg =
     '<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="25" height="25">';
@@ -162,7 +162,7 @@ function App() {
         await getPoints();
         updateTags();
         setCategories(
-          Object.values(cats.categories).map(category => {
+          Object.values(cats.categories).map((category) => {
             return {
               label: category.name,
               value: category.name,
@@ -176,18 +176,18 @@ function App() {
     }
   }, []);
 
-  const handleFeature = collection => {
+  const handleFeature = (collection) => {
     if (!collection || collection.length === 0) return;
     const feature = collection[0];
     const results = window.result;
-    const point = results.find(item => item.id === feature.values_.id);
+    const point = results.find((item) => item.id === feature.values_.id);
     if (point) {
       setSelectedFeature(point);
       setShowModal(true);
     }
   };
   const handleChange = (key, val) => {
-    const newVal = val.map(item => item.value);
+    const newVal = val.map((item) => item.value);
     setDropDownValue({
       ...dropDownValue,
       [key]: val,
@@ -208,7 +208,7 @@ function App() {
     }
     setLoading(false);
   };
-  const handleSubmit = ev => {
+  const handleSubmit = (ev) => {
     console.log("running submit", params);
     ev.preventDefault();
     setSearching(true);
@@ -217,19 +217,19 @@ function App() {
     let searchResult = window.allPoints;
 
     if (params.city && params.city.length > 0) {
-      searchResult = searchResult.filter(point =>
+      searchResult = searchResult.filter((point) =>
         params.city.includes(point.city)
       );
     }
     if (params.category && params.category.length > 0) {
-      searchResult = searchResult.filter(point =>
+      searchResult = searchResult.filter((point) =>
         params.category.includes(point.category)
       );
     }
 
     if (params.tags && params.tags.length > 0) {
       searchResult = searchResult.filter(
-        point =>
+        (point) =>
           params.tags &&
           point.tags &&
           point.tags.find((tag, index) => {
@@ -241,7 +241,7 @@ function App() {
     setResult(searchResult);
     setSearching(false);
 
-    searchResult.map(item => {
+    searchResult.map((item) => {
       if (item.latitud && item.longitude && typeof item.latitud === "string") {
         list.push({
           id: item.id,
@@ -280,7 +280,7 @@ function App() {
                     const base = option.value.toLowerCase().split("-")[0];
                     return base.indexOf(q) > -1;
                   }}
-                  onChange={value => handleChange("city", value)}
+                  onChange={(value) => handleChange("city", value)}
                   value={
                     dropDownValue && dropDownValue.city
                       ? dropDownValue.city
@@ -296,7 +296,7 @@ function App() {
                     isMulti
                     placeholder="Todas las categorías"
                     className="block text-sm my-2"
-                    onChange={value => handleChange("category", value)}
+                    onChange={(value) => handleChange("category", value)}
                     value={
                       dropDownValue && dropDownValue.category
                         ? dropDownValue.category
@@ -312,7 +312,7 @@ function App() {
                   isMulti
                   placeholder=""
                   className="block text-sm my-2"
-                  onChange={value => handleChange("tags", value)}
+                  onChange={(value) => handleChange("tags", value)}
                   value={
                     dropDownValue && dropDownValue.tags
                       ? dropDownValue.tags
@@ -334,7 +334,7 @@ function App() {
 
                 <button
                   type="button"
-                  onClick={ev => {
+                  onClick={(ev) => {
                     ev.preventDefault();
                     clearResults();
                   }}
@@ -369,7 +369,7 @@ function App() {
                     {`${result.length} Resultados`}
                   </h2>
                   <div className="space-y-3">
-                    {result.map(item => {
+                    {result.map((item) => {
                       return (
                         <div
                           className="shadow-lg bg-white rounded-xl p-5 space-y-3"
@@ -474,7 +474,7 @@ const ShowItem = ({ item, onList }) => {
               <p>
                 {item.phone}
                 {item.email &&
-                  item.email.split(";").map(el => (
+                  item.email.split(";").map((el) => (
                     <>
                       &nbsp; | &nbsp;
                       <a
