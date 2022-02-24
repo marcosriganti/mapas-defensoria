@@ -53,8 +53,8 @@ const PointsPage = () => {
                     });
                 }
               }}
-              className={`p-2 bg-${
-                updating ? `gray-500` : `orange-500`
+              className={`p-2 ${
+                updating ? `bg-gray-500` : `bg-orange-500`
               } inline rounded text-white text-sm`}
             >
               {updating ? `Actualizando...` : `Actualizar Publico`}
